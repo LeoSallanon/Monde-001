@@ -24,39 +24,31 @@
       </header>
 
       <section class="map-shell" aria-label="Carte des biomes">
-        <div class="zoom-controls" role="group" aria-label="Contrôles de zoom">
-          <button type="button" data-action="zoom-out" aria-label="Réduire le zoom">−</button>
-          <input
-            type="range"
-            min="70"
-            max="150"
-            step="5"
-            value="100"
-            aria-label="Niveau de zoom"
-            data-role="zoom-range"
-          />
-          <button type="button" data-action="zoom-in" aria-label="Augmenter le zoom">+</button>
-          <span data-role="zoom-value">100%</span>
-        </div>
-
-        <div class="map-viewport">
-          <div class="map-canvas" data-role="map-canvas">
-            <div class="map-grid">
-              <article class="tile tile-sous-bois">Sous bois</article>
-              <article class="tile tile-chemins">Chemins</article>
-              <article class="tile tile-tundra">Tundra</article>
-              <article class="tile tile-plaines">Plaines</article>
-              <article class="tile tile-simulation">Simulation</article>
-              <article class="tile tile-bois">Bois</article>
-              <article class="tile tile-lacs">Lacs / Étangs</article>
-              <article class="tile tile-ruines">Ruines</article>
-              <article class="tile tile-marecages">Marécages</article>
-              <article class="tile tile-falaises">Falaises</article>
-              <article class="tile tile-interieurs">Intérieurs</article>
-              <article class="tile tile-bois-profonds">Bois profonds</article>
-              <article class="tile tile-rivieres">Rivières</article>
-              <article class="tile tile-montagnes">Montagnes</article>
+        <div class="map-viewport" data-role="viewport" tabindex="0">
+          <div class="map-world" data-role="world">
+            <div class="map-canvas" data-role="board-content">
+              <div class="map-grid">
+                <article class="tile tile-sous-bois" data-biome="sous-bois">Sous bois</article>
+                <article class="tile tile-chemins" data-biome="chemins">Chemins</article>
+                <article class="tile tile-tundra" data-biome="tundra">Tundra</article>
+                <article class="tile tile-plaines" data-biome="plaines">Plaines</article>
+                <article class="tile tile-simulation" data-biome="simulation">Simulation</article>
+                <article class="tile tile-bois" data-biome="bois">Bois</article>
+                <article class="tile tile-lacs" data-biome="lacs-etangs">Lacs / Étangs</article>
+                <article class="tile tile-ruines" data-biome="ruines">Ruines</article>
+                <article class="tile tile-marecages" data-biome="marecages">Marécages</article>
+                <article class="tile tile-falaises" data-biome="falaises">Falaises</article>
+                <article class="tile tile-interieurs" data-biome="interieurs">Intérieurs</article>
+                <article class="tile tile-bois-profonds" data-biome="bois-profonds">Bois profonds</article>
+                <article class="tile tile-rivieres" data-biome="rivieres">Rivières</article>
+                <article class="tile tile-montagnes" data-biome="montagnes">Montagnes</article>
+              </div>
+              <div class="map-overlays" data-role="map-overlays" aria-hidden="true"></div>
             </div>
+          </div>
+          <div class="board-hud" aria-hidden="true">
+            <button type="button" class="reset-chip" data-action="reset-view">Reset view</button>
+            <span class="zoom-chip" data-role="zoom-value">100%</span>
           </div>
         </div>
       </section>
@@ -64,27 +56,276 @@
 
     <script>
       (() => {
-        const range = document.querySelector('[data-role="zoom-range"]');
+        const MIN_SCALE = 0.35;
+        const MAX_SCALE = 2.5;
+        const ZOOM_STEP = 1.12;
+
+        const viewport = document.querySelector('[data-role="viewport"]');
+        const world = document.querySelector('[data-role="world"]');
+        const boardContent = document.querySelector('[data-role="board-content"]');
+        const overlays = document.querySelector('[data-role="map-overlays"]');
+
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
-        const canvas = document.querySelector('[data-role="map-canvas"]');
-        const zoomIn = document.querySelector('[data-action="zoom-in"]');
-        const zoomOut = document.querySelector('[data-action="zoom-out"]');
+        const resetView = document.querySelector('[data-action="reset-view"]');
 
-        const min = Number(range.min);
-        const max = Number(range.max);
+        const cards = [
+          {
+            id: 'image-01',
+            src: 'assets/images/image-01.svg',
+            primaryBiome: 'lacs-etangs',
+            secondaryBiomes: ['marecages', 'falaises'],
+            x: null,
+            y: null,
+            width: 186,
+            height: 248,
+            zIndex: 4,
+            offsetX: 28,
+            offsetY: -14,
+          },
+          {
+            id: 'image-02',
+            src: 'assets/images/image-02.svg',
+            primaryBiome: 'sous-bois',
+            secondaryBiomes: ['bois-profonds', 'ruines'],
+            x: null,
+            y: null,
+            width: 176,
+            height: 236,
+            zIndex: 5,
+            offsetX: -48,
+            offsetY: 34,
+          },
+          {
+            id: 'image-03',
+            src: 'assets/images/image-03.svg',
+            primaryBiome: 'marecages',
+            secondaryBiomes: ['lacs-etangs', 'bois-profonds'],
+            x: null,
+            y: null,
+            width: 170,
+            height: 230,
+            zIndex: 6,
+            offsetX: -12,
+            offsetY: 22,
+          },
+          {
+            id: 'image-04',
+            src: 'assets/images/image-04.svg',
+            primaryBiome: 'ruines',
+            secondaryBiomes: ['interieurs', 'sous-bois'],
+            x: null,
+            y: null,
+            width: 180,
+            height: 242,
+            zIndex: 7,
+            offsetX: -32,
+            offsetY: -20,
+          },
+        ];
 
-        const setZoom = (value) => {
-          const zoom = Math.min(max, Math.max(min, value));
-          range.value = String(zoom);
-          canvas.style.setProperty('--zoom', String(zoom / 100));
-          zoomValue.textContent = `${zoom}%`;
+        const view = {
+          scale: 1,
+          x: 0,
+          y: 0,
+          dragging: false,
+          dragX: 0,
+          dragY: 0,
         };
 
-        range.addEventListener('input', () => setZoom(Number(range.value)));
-        zoomIn.addEventListener('click', () => setZoom(Number(range.value) + 5));
-        zoomOut.addEventListener('click', () => setZoom(Number(range.value) - 5));
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-        setZoom(Number(range.value));
+        const applyTransform = () => {
+          world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+          const percent = Math.round(view.scale * 100);
+          zoomValue.textContent = `${percent}%`;
+        };
+
+        const getBiomeCenters = () => {
+          const centers = {};
+          const boardBounds = boardContent.getBoundingClientRect();
+
+          boardContent.querySelectorAll('[data-biome]').forEach((tile) => {
+            const biome = tile.dataset.biome;
+            const tileBounds = tile.getBoundingClientRect();
+            centers[biome] = {
+              x: tileBounds.left - boardBounds.left + tileBounds.width / 2,
+              y: tileBounds.top - boardBounds.top + tileBounds.height / 2,
+            };
+          });
+
+          return centers;
+        };
+
+        const resolveCardPosition = (card, biomeCenters) => {
+          const primary = biomeCenters[card.primaryBiome];
+          if (!primary) {
+            return { x: 0, y: 0 };
+          }
+
+          const secondaryCenters = card.secondaryBiomes
+            .map((biome) => biomeCenters[biome])
+            .filter(Boolean);
+
+          const secondaryTarget =
+            secondaryCenters.length > 0
+              ? secondaryCenters.reduce(
+                  (acc, point) => ({ x: acc.x + point.x / secondaryCenters.length, y: acc.y + point.y / secondaryCenters.length }),
+                  { x: 0, y: 0 }
+                )
+              : primary;
+
+          const blendX = primary.x * 0.7 + secondaryTarget.x * 0.3;
+          const blendY = primary.y * 0.7 + secondaryTarget.y * 0.3;
+
+          const rawX = blendX - card.width / 2 + (card.offsetX ?? 0);
+          const rawY = blendY - card.height / 2 + (card.offsetY ?? 0);
+
+          const maxX = boardContent.clientWidth - card.width;
+          const maxY = boardContent.clientHeight - card.height;
+
+          return {
+            x: clamp(rawX, 0, Math.max(0, maxX)),
+            y: clamp(rawY, 0, Math.max(0, maxY)),
+          };
+        };
+
+        const renderCards = () => {
+          const biomeCenters = getBiomeCenters();
+
+          overlays.innerHTML = '';
+
+          cards.forEach((card) => {
+            const position = resolveCardPosition(card, biomeCenters);
+            card.x = Math.round(position.x);
+            card.y = Math.round(position.y);
+
+            const figure = document.createElement('figure');
+            figure.className = 'board-card';
+            figure.style.left = `${card.x}px`;
+            figure.style.top = `${card.y}px`;
+            figure.style.width = `${card.width}px`;
+            figure.style.height = `${card.height}px`;
+            figure.style.zIndex = String(card.zIndex ?? 1);
+            figure.dataset.cardId = card.id;
+
+            const image = document.createElement('img');
+            image.src = card.src;
+            image.alt = `${card.id} — biomes: ${[card.primaryBiome, ...card.secondaryBiomes].join(', ')}`;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+
+            figure.appendChild(image);
+            overlays.appendChild(figure);
+          });
+        };
+
+        const centerToFit = () => {
+          const viewportRect = viewport.getBoundingClientRect();
+          const boardRect = boardContent.getBoundingClientRect();
+
+          const fitScale = clamp(
+            Math.min(
+              (viewportRect.width * 0.88) / boardRect.width,
+              (viewportRect.height * 0.88) / boardRect.height
+            ),
+            MIN_SCALE,
+            MAX_SCALE
+          );
+
+          view.scale = fitScale;
+          view.x = (viewportRect.width - boardRect.width * fitScale) / 2;
+          view.y = (viewportRect.height - boardRect.height * fitScale) / 2;
+          applyTransform();
+        };
+
+        const zoomAtPoint = (nextScale, clientX, clientY) => {
+          const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+          const viewportRect = viewport.getBoundingClientRect();
+          const pointerX = clientX - viewportRect.left;
+          const pointerY = clientY - viewportRect.top;
+
+          const worldX = (pointerX - view.x) / view.scale;
+          const worldY = (pointerY - view.y) / view.scale;
+
+          view.scale = scale;
+          view.x = pointerX - worldX * view.scale;
+          view.y = pointerY - worldY * view.scale;
+          applyTransform();
+        };
+
+        const zoomFromCenter = (direction) => {
+          const rect = viewport.getBoundingClientRect();
+          const next = direction > 0 ? view.scale * ZOOM_STEP : view.scale / ZOOM_STEP;
+          zoomAtPoint(next, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        };
+
+        viewport.addEventListener(
+          'wheel',
+          (event) => {
+            event.preventDefault();
+            const delta = Math.sign(event.deltaY);
+            const next = delta > 0 ? view.scale / ZOOM_STEP : view.scale * ZOOM_STEP;
+            zoomAtPoint(next, event.clientX, event.clientY);
+          },
+          { passive: false }
+        );
+
+        viewport.addEventListener('mousedown', (event) => {
+          if (event.button !== 0 || event.target.closest('.tile, .board-card, button, input, a, [data-no-pan]')) {
+            return;
+          }
+
+          view.dragging = true;
+          view.dragX = event.clientX - view.x;
+          view.dragY = event.clientY - view.y;
+          viewport.classList.add('is-dragging');
+        });
+
+        window.addEventListener('mousemove', (event) => {
+          if (!view.dragging) {
+            return;
+          }
+
+          view.x = event.clientX - view.dragX;
+          view.y = event.clientY - view.dragY;
+          applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+          view.dragging = false;
+          viewport.classList.remove('is-dragging');
+        });
+
+        resetView.addEventListener('click', centerToFit);
+
+        window.addEventListener('keydown', (event) => {
+          if (event.target.closest('input, textarea, select, [contenteditable="true"]')) {
+            return;
+          }
+
+          if (event.key === '+' || event.key === '=') {
+            event.preventDefault();
+            zoomFromCenter(1);
+          }
+
+          if (event.key === '-') {
+            event.preventDefault();
+            zoomFromCenter(-1);
+          }
+
+          if (event.key === '0') {
+            event.preventDefault();
+            centerToFit();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          renderCards();
+          centerToFit();
+        });
+
+        renderCards();
+        centerToFit();
       })();
     </script>
   </body>

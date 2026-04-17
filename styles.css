@@ -21,9 +21,14 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  overflow: hidden;
   font-family: "Inter", sans-serif;
   color: var(--ink);
   background:
@@ -34,14 +39,23 @@ body {
 }
 
 .page {
-  max-width: 1260px;
-  margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem);
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0.45rem;
+  display: grid;
+  grid-template-columns: clamp(210px, 23vw, 320px) minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: stretch;
 }
 
 .hero {
-  margin-bottom: 1.2rem;
+  padding: clamp(1rem, 2.5vw, 1.65rem) clamp(0.8rem, 2vw, 1.25rem);
   opacity: 0.95;
+  border-radius: 20px;
+  background: rgba(248, 248, 245, 0.82);
+  border: 1px solid rgba(82, 90, 96, 0.14);
+  box-shadow: 0 4px 12px rgba(34, 40, 44, 0.05);
 }
 
 .hero h1 {
@@ -54,61 +68,110 @@ body {
 }
 
 .hero p {
-  margin: 0.5rem 0 0;
-  max-width: 72ch;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  margin: 0.7rem 0 0;
+  max-width: 27ch;
+  font-size: 0.9rem;
+  line-height: 1.42;
 }
 
 .map-shell {
-  display: grid;
-  gap: 0.8rem;
+  min-height: 0;
+  height: 100%;
+  display: block;
 }
 
-.zoom-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: fit-content;
-  padding: 0.45rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid rgba(65, 70, 74, 0.2);
-  background: rgba(252, 252, 249, 0.75);
-  box-shadow: var(--shadow);
+.board-hud {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0.9rem 1rem;
+  pointer-events: none;
 }
 
-.zoom-controls button {
-  border: 1px solid rgba(65, 70, 74, 0.2);
-  background: linear-gradient(180deg, #fefefd, #ecebe7);
+.reset-chip,
+.zoom-chip {
   border-radius: 999px;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.2rem;
+  border: 1px solid rgba(65, 70, 74, 0.24);
+  background: rgba(252, 252, 249, 0.9);
+  box-shadow: 0 6px 14px rgba(34, 40, 44, 0.08);
+  font-size: 0.92rem;
   line-height: 1;
+  color: #25292b;
+}
+
+.reset-chip {
+  pointer-events: auto;
+  padding: 0.55rem 0.95rem;
   cursor: pointer;
 }
 
-.zoom-controls input[type="range"] {
-  width: 170px;
-}
-
-.zoom-controls span {
-  min-width: 3.2rem;
-  font-size: 0.85rem;
+.zoom-chip {
+  padding: 0.58rem 0.9rem;
+  min-width: 4.1rem;
+  text-align: center;
 }
 
 .map-viewport {
-  overflow: auto;
-  border-radius: 20px;
-  padding: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  min-height: 0;
+  height: calc(100vh - 0.9rem);
+  border: 1px solid rgba(95, 102, 109, 0.16);
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.58), transparent 46%),
+    radial-gradient(circle at 80% 90%, rgba(168, 191, 223, 0.18), transparent 40%),
+    rgba(249, 249, 246, 0.92);
+  cursor: grab;
+}
+
+.map-viewport:focus-visible {
+  outline: 2px solid rgba(75, 90, 120, 0.4);
+  outline-offset: 2px;
+}
+
+.map-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.map-world {
+  position: absolute;
+  inset: 0 auto auto 0;
+  transform-origin: 0 0;
+  will-change: transform;
 }
 
 .map-canvas {
-  --zoom: 1;
-  transform: scale(var(--zoom));
-  transform-origin: top left;
+  position: relative;
   width: fit-content;
-  transition: transform 0.2s ease;
+}
+
+.map-overlays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.board-card {
+  position: absolute;
+  margin: 0;
+  border: 3px solid rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
+  overflow: hidden;
+  background: #f9f8f3;
+  box-shadow:
+    0 8px 20px rgba(20, 24, 28, 0.12),
+    0 2px 8px rgba(20, 24, 28, 0.08);
+}
+
+.board-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #f3f0e8;
 }
 
 .map-grid {
@@ -134,6 +197,7 @@ body {
   border: 1px solid rgba(95, 102, 109, 0.18);
   background-size: 12px 12px, auto;
   background-blend-mode: overlay;
+  user-select: none;
 }
 
 .tile-sous-bois {
@@ -239,6 +303,20 @@ body {
 }
 
 @media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.45rem;
+  }
+
+  .hero {
+    padding: 0.95rem;
+  }
+
+  .map-viewport {
+    height: calc(100vh - 12.4rem);
+  }
+
   .map-grid {
     grid-template-columns: repeat(8, minmax(40px, 1fr));
     grid-template-rows: repeat(14, 64px);
