@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -15,29 +15,77 @@
   <body>
     <main class="page">
       <header class="hero">
-        <h1>Carte des zones</h1>
+        <h1>cartographie Monde-001</h1>
         <p>
-          Une composition douce et organique inspirée d'une nature rêvée:
-          minérale, végétale et brumeuse.
+          Chaque image constitue une fenêtre sur un lieu remarquable d’un univers,
+          un point de vue vers ce monde scindé en différents biomes. Les Dessins
+          issues des images sont tracés par une machine en utilisant un stylo plume.
         </p>
       </header>
 
-      <section class="map-grid" aria-label="Carte des biomes">
-        <article class="tile tile-sous-bois">Sous bois</article>
-        <article class="tile tile-chemins">Chemins</article>
-        <article class="tile tile-tundra">Tundra</article>
-        <article class="tile tile-plaines">Plaines</article>
-        <article class="tile tile-simulation">Simulation</article>
-        <article class="tile tile-bois">Bois</article>
-        <article class="tile tile-lacs">Lacs / Étangs</article>
-        <article class="tile tile-ruines">Ruines</article>
-        <article class="tile tile-marecages">Marécages</article>
-        <article class="tile tile-falaises">Falaises</article>
-        <article class="tile tile-interieurs">Intérieurs</article>
-        <article class="tile tile-bois-profonds">Bois profonds</article>
-        <article class="tile tile-rivieres">Rivières</article>
-        <article class="tile tile-montagnes">Montagnes</article>
+      <section class="map-shell" aria-label="Carte des biomes">
+        <div class="zoom-controls" role="group" aria-label="Contrôles de zoom">
+          <button type="button" data-action="zoom-out" aria-label="Réduire le zoom">−</button>
+          <input
+            type="range"
+            min="70"
+            max="150"
+            step="5"
+            value="100"
+            aria-label="Niveau de zoom"
+            data-role="zoom-range"
+          />
+          <button type="button" data-action="zoom-in" aria-label="Augmenter le zoom">+</button>
+          <span data-role="zoom-value">100%</span>
+        </div>
+
+        <div class="map-viewport">
+          <div class="map-canvas" data-role="map-canvas">
+            <div class="map-grid">
+              <article class="tile tile-sous-bois">Sous bois</article>
+              <article class="tile tile-chemins">Chemins</article>
+              <article class="tile tile-tundra">Tundra</article>
+              <article class="tile tile-plaines">Plaines</article>
+              <article class="tile tile-simulation">Simulation</article>
+              <article class="tile tile-bois">Bois</article>
+              <article class="tile tile-lacs">Lacs / Étangs</article>
+              <article class="tile tile-ruines">Ruines</article>
+              <article class="tile tile-marecages">Marécages</article>
+              <article class="tile tile-falaises">Falaises</article>
+              <article class="tile tile-interieurs">Intérieurs</article>
+              <article class="tile tile-bois-profonds">Bois profonds</article>
+              <article class="tile tile-rivieres">Rivières</article>
+              <article class="tile tile-montagnes">Montagnes</article>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
+
+    <script>
+      (() => {
+        const range = document.querySelector('[data-role="zoom-range"]');
+        const zoomValue = document.querySelector('[data-role="zoom-value"]');
+        const canvas = document.querySelector('[data-role="map-canvas"]');
+        const zoomIn = document.querySelector('[data-action="zoom-in"]');
+        const zoomOut = document.querySelector('[data-action="zoom-out"]');
+
+        const min = Number(range.min);
+        const max = Number(range.max);
+
+        const setZoom = (value) => {
+          const zoom = Math.min(max, Math.max(min, value));
+          range.value = String(zoom);
+          canvas.style.setProperty('--zoom', String(zoom / 100));
+          zoomValue.textContent = `${zoom}%`;
+        };
+
+        range.addEventListener('input', () => setZoom(Number(range.value)));
+        zoomIn.addEventListener('click', () => setZoom(Number(range.value) + 5));
+        zoomOut.addEventListener('click', () => setZoom(Number(range.value) - 5));
+
+        setZoom(Number(range.value));
+      })();
+    </script>
   </body>
 </html>
