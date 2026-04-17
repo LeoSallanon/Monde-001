@@ -24,24 +24,6 @@
       </header>
 
       <section class="map-shell" aria-label="Carte des biomes">
-        <div class="zoom-controls" role="group" aria-label="Contrôles de zoom">
-          <button type="button" data-action="zoom-out" aria-label="Réduire le zoom">−</button>
-          <input
-            type="range"
-            min="35"
-            max="250"
-            step="5"
-            value="100"
-            aria-label="Niveau de zoom"
-            data-role="zoom-range"
-          />
-          <button type="button" data-action="zoom-in" aria-label="Augmenter le zoom">+</button>
-          <button type="button" data-action="reset-view" aria-label="Réinitialiser la vue">
-            Reset view
-          </button>
-          <span data-role="zoom-value">100%</span>
-        </div>
-
         <div class="map-viewport" data-role="viewport" tabindex="0">
           <div class="map-world" data-role="world">
             <div class="map-canvas" data-role="board-content">
@@ -64,6 +46,10 @@
               <div class="map-overlays" data-role="map-overlays" aria-hidden="true"></div>
             </div>
           </div>
+          <div class="board-hud" aria-hidden="true">
+            <button type="button" class="reset-chip" data-action="reset-view">Reset view</button>
+            <span class="zoom-chip" data-role="zoom-value">100%</span>
+          </div>
         </div>
       </section>
     </main>
@@ -79,10 +65,7 @@
         const boardContent = document.querySelector('[data-role="board-content"]');
         const overlays = document.querySelector('[data-role="map-overlays"]');
 
-        const range = document.querySelector('[data-role="zoom-range"]');
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
-        const zoomIn = document.querySelector('[data-action="zoom-in"]');
-        const zoomOut = document.querySelector('[data-action="zoom-out"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
 
         const cards = [
@@ -154,7 +137,6 @@
         const applyTransform = () => {
           world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
           const percent = Math.round(view.scale * 100);
-          range.value = String(percent);
           zoomValue.textContent = `${percent}%`;
         };
 
@@ -314,17 +296,6 @@
           viewport.classList.remove('is-dragging');
         });
 
-        range.addEventListener('input', () => {
-          const rect = viewport.getBoundingClientRect();
-          zoomAtPoint(
-            Number(range.value) / 100,
-            rect.left + rect.width / 2,
-            rect.top + rect.height / 2
-          );
-        });
-
-        zoomIn.addEventListener('click', () => zoomFromCenter(1));
-        zoomOut.addEventListener('click', () => zoomFromCenter(-1));
         resetView.addEventListener('click', centerToFit);
 
         window.addEventListener('keydown', (event) => {

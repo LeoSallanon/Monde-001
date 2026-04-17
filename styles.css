@@ -39,16 +39,18 @@ body {
 }
 
 .page {
-  max-width: 1280px;
+  max-width: 1460px;
   height: 100%;
   margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  padding: clamp(1rem, 2vw, 1.6rem) clamp(1rem, 2.8vw, 2.4rem);
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  gap: clamp(1rem, 2.5vw, 2.2rem);
+  align-items: start;
 }
 
 .hero {
+  padding-top: clamp(0.4rem, 2vh, 1.5rem);
   opacity: 0.95;
 }
 
@@ -69,51 +71,50 @@ body {
 }
 
 .map-shell {
-  display: grid;
-  gap: 0.8rem;
-  flex: 1;
   min-height: 0;
+  height: 100%;
+  display: block;
 }
 
-.zoom-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: fit-content;
-  padding: 0.45rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid rgba(65, 70, 74, 0.2);
-  background: rgba(252, 252, 249, 0.75);
-  box-shadow: var(--shadow);
+.board-hud {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0.9rem 1rem;
+  pointer-events: none;
 }
 
-.zoom-controls button {
-  border: 1px solid rgba(65, 70, 74, 0.2);
-  background: linear-gradient(180deg, #fefefd, #ecebe7);
+.reset-chip,
+.zoom-chip {
   border-radius: 999px;
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.75rem;
-  font-size: 1.05rem;
+  border: 1px solid rgba(65, 70, 74, 0.24);
+  background: rgba(252, 252, 249, 0.9);
+  box-shadow: 0 6px 14px rgba(34, 40, 44, 0.08);
+  font-size: 0.92rem;
   line-height: 1;
+  color: #25292b;
+}
+
+.reset-chip {
+  pointer-events: auto;
+  padding: 0.55rem 0.95rem;
   cursor: pointer;
 }
 
-.zoom-controls input[type='range'] {
-  width: 180px;
-}
-
-.zoom-controls span {
-  min-width: 3.2rem;
-  font-size: 0.85rem;
+.zoom-chip {
+  padding: 0.58rem 0.9rem;
+  min-width: 4.1rem;
+  text-align: center;
 }
 
 .map-viewport {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 24px;
   min-height: 0;
-  height: 100%;
+  height: calc(100vh - clamp(2rem, 4vh, 3.5rem));
   border: 1px solid rgba(95, 102, 109, 0.16);
   background:
     radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.58), transparent 46%),
@@ -298,9 +299,18 @@ body {
 }
 
 @media (max-width: 960px) {
-  .zoom-controls {
-    flex-wrap: wrap;
-    border-radius: 18px;
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+
+  .hero {
+    padding-top: 0;
+  }
+
+  .map-viewport {
+    height: calc(100vh - 11.8rem);
   }
 
   .map-grid {
