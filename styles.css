@@ -1,20 +1,20 @@
 :root {
-  --bg: #efefec;
-  --ink: #2a2e31;
+  --bg: #f2f2ef;
+  --ink: #2f3132;
 
-  --mist: #ecebe6;
-  --sand: #ddd7c0;
-  --sage: #c8dfd1;
-  --green-soft: #afd6bc;
-  --green-mid: #7fb194;
-  --green-deep: #689f7f;
-  --slate-light: #d1d4d6;
-  --slate-mid: #b6b8ba;
-  --water: #9fb7d7;
-  --water-soft: #cad5e7;
+  --mist: #ebe9e0;
+  --sand: #d8ccab;
+  --sage: #d2e7dd;
+  --green-soft: #b6e1cb;
+  --green-mid: #90bfaa;
+  --green-deep: #68af8f;
+  --slate-light: #d8d8dc;
+  --slate-mid: #b5b5bb;
+  --water: #a8bfdf;
+  --water-soft: #c0cde4;
 
-  --radius: 30px;
-  --shadow: 0 8px 26px rgba(33, 44, 52, 0.08);
+  --radius: 34px;
+  --shadow: 0 10px 24px rgba(34, 40, 44, 0.08);
 }
 
 * {
@@ -28,34 +28,87 @@ body {
   color: var(--ink);
   background:
     radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.7), transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(160, 190, 220, 0.2), transparent 38%),
+    radial-gradient(circle at 80% 80%, rgba(180, 200, 220, 0.18), transparent 40%),
+    repeating-linear-gradient(45deg, rgba(200, 200, 200, 0.08) 0 1px, transparent 1px 10px),
     var(--bg);
 }
 
 .page {
-  max-width: 1200px;
+  max-width: 1260px;
   margin: 0 auto;
   padding: clamp(1rem, 2vw, 2rem);
 }
 
 .hero {
-  margin-bottom: 1rem;
-  opacity: 0.92;
+  margin-bottom: 1.2rem;
+  opacity: 0.95;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(1.2rem, 2.4vw, 2rem);
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  font-family: "Cormorant Garamond", serif;
   font-weight: 500;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .hero p {
   margin: 0.5rem 0 0;
-  max-width: 64ch;
+  max-width: 72ch;
   font-size: 0.95rem;
-  line-height: 1.45;
+  line-height: 1.5;
+}
+
+.map-shell {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.45rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(65, 70, 74, 0.2);
+  background: rgba(252, 252, 249, 0.75);
+  box-shadow: var(--shadow);
+}
+
+.zoom-controls button {
+  border: 1px solid rgba(65, 70, 74, 0.2);
+  background: linear-gradient(180deg, #fefefd, #ecebe7);
+  border-radius: 999px;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.zoom-controls input[type="range"] {
+  width: 170px;
+}
+
+.zoom-controls span {
+  min-width: 3.2rem;
+  font-size: 0.85rem;
+}
+
+.map-viewport {
+  overflow: auto;
+  border-radius: 20px;
+  padding: 0.5rem;
+}
+
+.map-canvas {
+  --zoom: 1;
+  transform: scale(var(--zoom));
+  transform-origin: top left;
+  width: fit-content;
+  transition: transform 0.2s ease;
 }
 
 .map-grid {
@@ -63,97 +116,133 @@ body {
   grid-template-columns: repeat(14, minmax(56px, 1fr));
   grid-template-rows: repeat(9, clamp(56px, 7.5vw, 96px));
   gap: 0.14rem;
+  min-width: 1040px;
 }
 
 .tile {
   display: grid;
   place-items: center;
   border-radius: var(--radius);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: clamp(0.72rem, 0.9vw, 1.05rem);
-  font-weight: 400;
+  font-size: clamp(0.74rem, 0.9vw, 1.1rem);
+  font-weight: 500;
+  font-family: "Cormorant Garamond", serif;
   text-align: center;
   padding: 0.8rem;
   box-shadow: var(--shadow);
-  border: 1px solid rgba(110, 120, 130, 0.08);
-  backdrop-filter: blur(1px);
+  border: 1px solid rgba(95, 102, 109, 0.18);
+  background-size: 12px 12px, auto;
+  background-blend-mode: overlay;
 }
 
 .tile-sous-bois {
   grid-area: 1 / 6 / 4 / 8;
-  background: color-mix(in srgb, var(--sage) 92%, white);
+  background-image:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #d3ebe0, #c6ded3);
 }
 
 .tile-chemins {
   grid-area: 1 / 8 / 4 / 9;
-  background: color-mix(in srgb, var(--sand) 95%, white);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.25) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #ded4b5, #d0c59e);
 }
 
 .tile-tundra {
   grid-area: 1 / 9 / 2 / 11;
-  background: var(--mist);
+  background-image:
+    repeating-linear-gradient(-30deg, rgba(255, 255, 255, 0.3) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #edece3, #e3e1d8);
 }
 
 .tile-plaines {
   grid-area: 2 / 9 / 4 / 11;
-  background: color-mix(in srgb, var(--mist) 88%, var(--sand));
+  background-image:
+    repeating-linear-gradient(-20deg, rgba(255, 255, 255, 0.25) 0 2px, transparent 2px 11px),
+    linear-gradient(180deg, #eeece4, #e4e1d7);
 }
 
 .tile-simulation {
   grid-area: 4 / 1 / 5 / 3;
-  background: color-mix(in srgb, var(--mist) 88%, white);
+  background-image:
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 12px),
+    linear-gradient(180deg, #f4f3ee, #e9e7de);
 }
 
 .tile-bois {
   grid-area: 4 / 3 / 5 / 8;
-  background: color-mix(in srgb, var(--green-soft) 92%, white);
+  background-image:
+    repeating-linear-gradient(70deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #bce4cd, #afdac3);
 }
 
 .tile-lacs {
   grid-area: 4 / 8 / 5 / 14;
-  background: color-mix(in srgb, var(--water-soft) 90%, white);
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(180deg, #c6d3ea, #b7c6e1);
 }
 
 .tile-ruines {
   grid-area: 5 / 1 / 7 / 6;
-  background: color-mix(in srgb, var(--slate-light) 95%, white);
+  background-image:
+    repeating-linear-gradient(-10deg, rgba(255, 255, 255, 0.18) 0 2px, transparent 2px 12px),
+    linear-gradient(180deg, #dadade, #cacacf);
 }
 
 .tile-marecages {
   grid-area: 5 / 6 / 6 / 10;
-  background: color-mix(in srgb, var(--green-deep) 92%, white);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #73ba99, #64aa8b);
 }
 
 .tile-falaises {
   grid-area: 5 / 12 / 6 / 15;
-  background: color-mix(in srgb, var(--slate-light) 60%, white);
+  background-image:
+    repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #dde0e2, #d2d5d8);
 }
 
 .tile-interieurs {
   grid-area: 7 / 3 / 8 / 6;
-  background: color-mix(in srgb, var(--slate-mid) 92%, white);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #babbc2, #aeb0b7);
 }
 
 .tile-bois-profonds {
   grid-area: 6 / 6 / 9 / 10;
-  background: color-mix(in srgb, var(--green-mid) 96%, white);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.18) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #93c4ad, #85b59f);
 }
 
 .tile-rivieres {
   grid-area: 5 / 10 / 10 / 11;
-  background: color-mix(in srgb, var(--water) 88%, white);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(180deg, #a8c0e0, #99b1d3);
 }
 
 .tile-montagnes {
   grid-area: 5 / 11 / 10 / 13;
-  background: color-mix(in srgb, var(--slate-light) 96%, white);
+  background-image:
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #d0d4d8, #c3c8cc);
 }
 
 @media (max-width: 960px) {
   .map-grid {
     grid-template-columns: repeat(8, minmax(40px, 1fr));
     grid-template-rows: repeat(14, 64px);
+    min-width: 620px;
   }
 
   .tile-sous-bois { grid-area: 1 / 1 / 3 / 3; }
