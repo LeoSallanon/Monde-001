@@ -57,8 +57,6 @@
     rgba(19, 22, 28, 0.95);
   --viewport-border: rgba(162, 177, 197, 0.28);
   --card-bg: rgba(34, 39, 47, 0.94);
-  --card-border: rgba(220, 231, 245, 0.55);
-  --card-border-hover: rgba(238, 245, 255, 0.78);
   --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.48);
   --modal-bg: rgba(27, 31, 37, 0.97);
   --modal-border: rgba(190, 202, 219, 0.26);
@@ -70,8 +68,8 @@
   --guide-text: rgba(203, 216, 236, 0.78);
   --guide-icon-stroke: rgba(214, 226, 245, 0.86);
   --tile-title: rgba(9, 13, 18, 0.64);
-  --card-border: rgba(120, 139, 164, 0.78);
-  --card-border-hover: rgba(145, 168, 198, 0.94);
+  --card-border: rgba(8, 10, 11, 0.72);
+  --card-border-hover: rgba(4, 6, 8, 0.86);
 }
 
 * {
@@ -453,10 +451,14 @@ body {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--card-border) 65%, transparent);
   background: transparent;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .artwork-modal__media img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
@@ -524,7 +526,7 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
   padding: 0;
   background: transparent;
 }
