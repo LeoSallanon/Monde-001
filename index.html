@@ -73,6 +73,9 @@
           <p class="artwork-modal__dimensions" data-role="modal-dimensions"></p>
           <p class="artwork-modal__tags" data-role="modal-tags"></p>
           <p class="artwork-modal__excerpt" data-role="modal-excerpt"></p>
+          <figure class="artwork-modal__detail" data-role="modal-detail" hidden>
+            <img data-role="modal-detail-image" alt="" />
+          </figure>
         </div>
       </article>
     </div>
@@ -96,6 +99,8 @@
         const modalDimensions = document.querySelector('[data-role="modal-dimensions"]');
         const modalTags = document.querySelector('[data-role="modal-tags"]');
         const modalExcerpt = document.querySelector('[data-role="modal-excerpt"]');
+        const modalDetail = document.querySelector('[data-role="modal-detail"]');
+        const modalDetailImage = document.querySelector('[data-role="modal-detail-image"]');
 
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
@@ -109,13 +114,14 @@
             title: 'Baignoire suspendue',
             previewSrc: 'Images/Perchoir.png',
             fullSrc: 'Images/Perchoir.png',
-            tags: ['sous-bois', 'lisière forestière', 'bois'],
-            dimensions: 'Dimensions : 92 × 61 cm',
-            excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ultrices ligula nec justo volutpat tincidunt.',
+            detailSrc: 'Images/Perchoir.png',
+            tags: ['bois', 'sous-bois'],
+            dimensions: 'Dimensions du dessin : 440 × 760 mm',
+            excerpt: 'Support : feuille 300 g, 575x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
             anchorX: 405,
             anchorY: 260,
-            cardX: 372,
-            cardY: 110,
+            cardX: 340,
+            cardY: 96,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             pointerStyle: 'curve',
@@ -502,6 +508,15 @@
           modalDimensions.textContent = card.dimensions;
           modalTags.textContent = `Tags : ${card.tags.join(' · ')}`;
           modalExcerpt.textContent = card.excerpt;
+          if (card.detailSrc) {
+            modalDetail.hidden = false;
+            modalDetailImage.src = card.detailSrc;
+            modalDetailImage.alt = `${card.title} — détail`;
+          } else {
+            modalDetail.hidden = true;
+            modalDetailImage.removeAttribute('src');
+            modalDetailImage.alt = '';
+          }
 
           const panel = modal.querySelector('.artwork-modal__panel');
           panel?.setAttribute('data-modal-variant', card.modalVariant || 'portrait');
