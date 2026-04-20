@@ -424,7 +424,7 @@
           return { byKey, textHitboxes };
         };
 
-        const CARD_ANCHORS = {
+        const CARD_ANCHOR_HINTS = {
           'baignoire-suspendue': { biome: 'sous-bois', slotX: 0.12, slotY: 0.2 },
           'ruine-porche': { biome: 'ruines', slotX: 0.2, slotY: 0.18 },
           'bassines-champignons': { biome: 'bois', slotX: 0.02, slotY: 0.1 },
@@ -434,43 +434,70 @@
           'bord-riviere': { biome: 'montagnes', slotX: 0.72, slotY: 0.7 },
         };
 
-        const getCardCandidates = (card, biomeRect) => {
-          const anchor = CARD_ANCHORS[card.id];
-          const defaultSlots = [
-            [anchor?.slotX ?? 0.12, anchor?.slotY ?? 0.12],
-            [0.1, 0.1],
-            [0.76, 0.1],
-            [0.1, 0.72],
-            [0.76, 0.72],
-            [0.48, 0.08],
-            [0.48, 0.75],
-            [0.08, 0.44],
-            [0.78, 0.44],
+        const makeCenteredRect = (anchorX, anchorY, card) => ({
+          x: anchorX - card.cardW / 2,
+          y: anchorY - card.cardH / 2,
+          w: card.cardW,
+          h: card.cardH,
+        });
+
+        const getCardPrimaryBiome = (card) => resolveBiomeKeyFromTag(card.tags?.[0] || '');
+
+        const getAnchorCandidates = (card, biomeRect) => {
+          const hint = CARD_ANCHOR_HINTS[card.id];
+          const preferredSlot = [hint?.slotX ?? 0.5, hint?.slotY ?? 0.5];
+          const slots = [
+            preferredSlot,
+            [0.2, 0.2],
+            [0.8, 0.2],
+            [0.2, 0.8],
+            [0.8, 0.8],
+            [0.5, 0.16],
+            [0.5, 0.84],
+            [0.16, 0.5],
+            [0.84, 0.5],
+            [0.35, 0.35],
+            [0.65, 0.35],
+            [0.35, 0.65],
+            [0.65, 0.65],
+            [0.5, 0.5],
           ];
 
-          return defaultSlots.map(([slotX, slotY]) => ({
-            x: biomeRect.x + clamp(slotX, 0, 1) * Math.max(0, biomeRect.w - card.cardW),
-            y: biomeRect.y + clamp(slotY, 0, 1) * Math.max(0, biomeRect.h - card.cardH),
-            w: card.cardW,
-            h: card.cardH,
+          const minX = biomeRect.x + card.cardW / 2;
+          const maxX = biomeRect.x + biomeRect.w - card.cardW / 2;
+          const minY = biomeRect.y + card.cardH / 2;
+          const maxY = biomeRect.y + biomeRect.h - card.cardH / 2;
+
+          if (minX > maxX || minY > maxY) {
+            return [];
+          }
+
+          return slots.map(([slotX, slotY]) => ({
+            x: clamp(biomeRect.x + slotX * biomeRect.w, minX, maxX),
+            y: clamp(biomeRect.y + slotY * biomeRect.h, minY, maxY),
           }));
         };
 
         const getCandidateBiomes = (card) => {
-          const anchor = CARD_ANCHORS[card.id];
-          const fromAnchor = anchor?.biome ? [anchor.biome] : [];
+          const hint = CARD_ANCHOR_HINTS[card.id];
+          const fromTag1 = [getCardPrimaryBiome(card)].filter(Boolean);
+          const fromAnchor = hint?.biome ? [hint.biome] : [];
           const fromTags = (card.tags || []).map((tag) => resolveBiomeKeyFromTag(tag));
-          return [...new Set([...fromAnchor, ...fromTags])];
+          return [...new Set([...fromTag1, ...fromAnchor, ...fromTags])];
         };
 
         const renderCards = () => {
           const resolvedCards = ARTWORK_LAYOUTS.map((layout) => normalizeCard(layout));
           const biomeData = getBiomeData();
-          const placed = [];
+          const placedRects = [];
+          const placedAnchors = [];
 
           resolvedCards.forEach((card) => {
             const candidateBiomes = getCandidateBiomes(card);
+            let chosenAnchor = null;
             let chosenRect = null;
+
+            const anchorSpacing = Math.max(card.cardW, card.cardH) * 0.9;
 
             candidateBiomes.some((biomeKey) => {
               const biomeEntry = biomeData.byKey.get(biomeKey);
@@ -478,28 +505,35 @@
                 return false;
               }
 
-              const candidates = getCardCandidates(card, biomeEntry.rect);
-              for (const candidate of candidates) {
-                const overlapsCard = placed.some((existing) => rectsOverlap(candidate, existing, 6));
+              const candidates = getAnchorCandidates(card, biomeEntry.rect);
+              for (const anchor of candidates) {
+                const candidate = makeCenteredRect(anchor.x, anchor.y, card);
+                const overlapsCard = placedRects.some((existing) => rectsOverlap(candidate, existing, 6));
                 const overlapsText = biomeData.textHitboxes.some((hitbox) => rectsOverlap(candidate, hitbox, 4));
-                if (overlapsCard || overlapsText) {
+                const tooCloseFromAnchor = placedAnchors.some(
+                  (existingAnchor) => Math.hypot(anchor.x - existingAnchor.x, anchor.y - existingAnchor.y) < anchorSpacing
+                );
+                if (overlapsCard || overlapsText || tooCloseFromAnchor) {
                   continue;
                 }
+                chosenAnchor = anchor;
                 chosenRect = candidate;
                 break;
               }
-              return Boolean(chosenRect);
+              return Boolean(chosenAnchor);
             });
 
             if (!chosenRect) {
               const fallbackX = clamp(card.cardX, 0, Math.max(0, boardContent.clientWidth - card.cardW));
               const fallbackY = clamp(card.cardY, 0, Math.max(0, boardContent.clientHeight - card.cardH));
               chosenRect = { x: fallbackX, y: fallbackY, w: card.cardW, h: card.cardH };
+              chosenAnchor = { x: chosenRect.x + card.cardW / 2, y: chosenRect.y + card.cardH / 2 };
             }
 
             card.cardX = chosenRect.x;
             card.cardY = chosenRect.y;
-            placed.push(chosenRect);
+            placedRects.push(chosenRect);
+            placedAnchors.push(chosenAnchor);
           });
 
           overlays.innerHTML = '';
