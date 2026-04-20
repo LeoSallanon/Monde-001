@@ -294,16 +294,192 @@
           };
         };
 
-        const clampCardIntoBoard = (card) => ({
-          ...card,
-          cardX: clamp(card.cardX, 0, Math.max(0, boardContent.clientWidth - card.cardW)),
-          cardY: clamp(card.cardY, 0, Math.max(0, boardContent.clientHeight - card.cardH)),
-          anchorX: clamp(card.anchorX, 0, boardContent.clientWidth),
-          anchorY: clamp(card.anchorY, 0, boardContent.clientHeight),
-        });
+        const normalizeTag = (value) =>
+          (value || '')
+            .normalize('NFD')
+            .replace(/\p{Diacritic}/gu, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        const BIOME_TAG_ALIASES = new Map([
+          ['lacs', 'lacs-etangs'],
+          ['etangs', 'lacs-etangs'],
+          ['etang', 'lacs-etangs'],
+          ['marecage', 'marecages'],
+          ['marecages', 'marecages'],
+          ['rivieres', 'rivieres'],
+          ['riviere', 'rivieres'],
+        ]);
+
+        const resolveBiomeKeyFromTag = (tag) => BIOME_TAG_ALIASES.get(normalizeTag(tag)) || normalizeTag(tag);
+
+        const rectsOverlap = (a, b, gap = 0) =>
+          a.x - gap < b.x + b.w && a.x + a.w + gap > b.x && a.y - gap < b.y + b.h && a.y + a.h + gap > b.y;
+
+        const segmentIntersectsRect = (p1, p2, rect) => {
+          const inside = (p) => p.x >= rect.x && p.x <= rect.x + rect.w && p.y >= rect.y && p.y <= rect.y + rect.h;
+          if (inside(p1) || inside(p2)) {
+            return true;
+          }
+
+          const edges = [
+            [{ x: rect.x, y: rect.y }, { x: rect.x + rect.w, y: rect.y }],
+            [{ x: rect.x + rect.w, y: rect.y }, { x: rect.x + rect.w, y: rect.y + rect.h }],
+            [{ x: rect.x + rect.w, y: rect.y + rect.h }, { x: rect.x, y: rect.y + rect.h }],
+            [{ x: rect.x, y: rect.y + rect.h }, { x: rect.x, y: rect.y }],
+          ];
+
+          const ccw = (a, b, c) => (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+          const intersects = (a, b, c, d) => ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+          return edges.some(([a, b]) => intersects(p1, p2, a, b));
+        };
+
+        const segmentsIntersect = (a1, a2, b1, b2) => {
+          const epsilon = 0.01;
+          const samePoint = (p, q) => Math.abs(p.x - q.x) < epsilon && Math.abs(p.y - q.y) < epsilon;
+          if (samePoint(a1, b1) || samePoint(a1, b2) || samePoint(a2, b1) || samePoint(a2, b2)) {
+            return false;
+          }
+          const ccw = (a, b, c) => (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+          return ccw(a1, b1, b2) !== ccw(a2, b1, b2) && ccw(a1, a2, b1) !== ccw(a1, a2, b2);
+        };
+
+        const getBiomeData = () => {
+          const tiles = Array.from(boardContent.querySelectorAll('.tile[data-biome]'));
+          const boardRect = boardContent.getBoundingClientRect();
+          const byKey = new Map();
+          const textHitboxes = [];
+
+          tiles.forEach((tile) => {
+            const tileRect = tile.getBoundingClientRect();
+            const x = tileRect.left - boardRect.left;
+            const y = tileRect.top - boardRect.top;
+            const w = tileRect.width;
+            const h = tileRect.height;
+            const hitboxW = clamp(w * 0.68, 90, w - 10);
+            const hitboxH = clamp(h * 0.36, 28, h - 10);
+            const textHitbox = {
+              x: x + (w - hitboxW) / 2,
+              y: y + (h - hitboxH) / 2,
+              w: hitboxW,
+              h: hitboxH,
+            };
+            const center = { x: textHitbox.x + textHitbox.w / 2, y: textHitbox.y + textHitbox.h / 2 };
+            const biomeKey = resolveBiomeKeyFromTag(tile.dataset.biome);
+            byKey.set(biomeKey, { textHitbox, center });
+            textHitboxes.push(textHitbox);
+          });
+
+          return { byKey, textHitboxes };
+        };
+
+        const anchorForCard = (card, biomeMap) => {
+          const matchedCenters = (card.tags || [])
+            .map((tag) => biomeMap.get(resolveBiomeKeyFromTag(tag)))
+            .filter(Boolean)
+            .map((entry) => entry.center);
+          if (!matchedCenters.length) {
+            return { x: clamp(card.anchorX, 0, boardContent.clientWidth), y: clamp(card.anchorY, 0, boardContent.clientHeight) };
+          }
+          const x = matchedCenters.reduce((sum, p) => sum + p.x, 0) / matchedCenters.length;
+          const y = matchedCenters.reduce((sum, p) => sum + p.y, 0) / matchedCenters.length;
+          return { x, y };
+        };
+
+        const layoutCards = (cards, biomeTextHitboxes) => {
+          const placed = [];
+          const segments = [];
+          const margin = 4;
+
+          cards.forEach((card, index) => {
+            const gap = card.cardH / 10;
+            const preferredRadius = Math.hypot(card.cardW / 2, card.cardH / 2) + gap;
+            const angleStep = Math.PI / 12;
+            const rectFromCenter = (cx, cy) => ({
+              x: clamp(cx - card.cardW / 2, margin, Math.max(margin, boardContent.clientWidth - card.cardW - margin)),
+              y: clamp(cy - card.cardH / 2, margin, Math.max(margin, boardContent.clientHeight - card.cardH - margin)),
+              w: card.cardW,
+              h: card.cardH,
+            });
+
+            const candidateRects = [];
+            for (let ring = 0; ring < 6; ring += 1) {
+              const radius = preferredRadius + ring * (gap + 16);
+              for (let step = 0; step < 24; step += 1) {
+                const angle = step * angleStep + (index % 2 ? Math.PI / 24 : 0);
+                candidateRects.push(rectFromCenter(card.anchorX + Math.cos(angle) * radius, card.anchorY + Math.sin(angle) * radius));
+              }
+            }
+            candidateRects.push(
+              rectFromCenter(card.cardX + card.cardW / 2, card.cardY + card.cardH / 2),
+              rectFromCenter(card.anchorX + preferredRadius, card.anchorY),
+              rectFromCenter(card.anchorX - preferredRadius, card.anchorY)
+            );
+
+            let best = null;
+
+            candidateRects.forEach((rect) => {
+              if (placed.some((existing) => rectsOverlap(rect, existing, 4))) {
+                return;
+              }
+              if (biomeTextHitboxes.some((hitbox) => rectsOverlap(rect, hitbox, 2))) {
+                return;
+              }
+
+              const attach = {
+                x: clamp(card.anchorX, rect.x, rect.x + rect.w),
+                y: clamp(card.anchorY, rect.y, rect.y + rect.h),
+              };
+              const anchor = { x: card.anchorX, y: card.anchorY };
+
+              if (biomeTextHitboxes.some((hitbox) => segmentIntersectsRect(anchor, attach, hitbox))) {
+                return;
+              }
+              if (segments.some((segment) => segmentsIntersect(anchor, attach, segment.anchor, segment.attach))) {
+                return;
+              }
+
+              const centerX = rect.x + rect.w / 2;
+              const centerY = rect.y + rect.h / 2;
+              const distance = Math.hypot(centerX - card.anchorX, centerY - card.anchorY);
+              const score = Math.abs(distance - preferredRadius) + Math.hypot(centerX - (card.cardX + card.cardW / 2), centerY - (card.cardY + card.cardH / 2)) * 0.18;
+
+              if (!best || score < best.score) {
+                best = { rect, attach, score };
+              }
+            });
+
+            if (!best) {
+              const fallbackRect = rectFromCenter(card.cardX + card.cardW / 2, card.cardY + card.cardH / 2);
+              best = {
+                rect: fallbackRect,
+                attach: {
+                  x: clamp(card.anchorX, fallbackRect.x, fallbackRect.x + fallbackRect.w),
+                  y: clamp(card.anchorY, fallbackRect.y, fallbackRect.y + fallbackRect.h),
+                },
+              };
+            }
+
+            placed.push(best.rect);
+            segments.push({ anchor: { x: card.anchorX, y: card.anchorY }, attach: best.attach });
+            card.cardX = best.rect.x;
+            card.cardY = best.rect.y;
+            card.attachX = best.attach.x;
+            card.attachY = best.attach.y;
+          });
+          return cards;
+        };
 
         const renderCards = () => {
-          const resolvedCards = ARTWORK_LAYOUTS.map((layout) => clampCardIntoBoard(normalizeCard(layout)));
+          const resolvedCards = ARTWORK_LAYOUTS.map((layout) => normalizeCard(layout));
+          const biomeData = getBiomeData();
+          resolvedCards.forEach((card) => {
+            const anchor = anchorForCard(card, biomeData.byKey);
+            card.anchorX = clamp(anchor.x, 0, boardContent.clientWidth);
+            card.anchorY = clamp(anchor.y, 0, boardContent.clientHeight);
+          });
+          layoutCards(resolvedCards, biomeData.textHitboxes);
 
           overlays.innerHTML = '';
           const connectors = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -313,16 +489,8 @@
           overlays.appendChild(connectors);
 
           resolvedCards.forEach((card) => {
-            const cardCenterX = card.cardX + card.cardW / 2;
-            const cardCenterY = card.cardY + card.cardH / 2;
-            const dx = cardCenterX - card.anchorX;
-            const dy = cardCenterY - card.anchorY;
-            const bend = card.pointerBend || 0;
-            const controlX = card.anchorX + dx * 0.5 - dy * 0.12;
-            const controlY = card.anchorY + dy * 0.5 + dx * 0.08 + bend;
-
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', `M ${card.anchorX} ${card.anchorY} Q ${controlX} ${controlY} ${cardCenterX} ${cardCenterY}`);
+            path.setAttribute('d', `M ${card.anchorX} ${card.anchorY} L ${card.attachX} ${card.attachY}`);
             path.setAttribute('class', 'map-connector__path');
             connectors.appendChild(path);
 
