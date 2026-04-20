@@ -27,7 +27,7 @@
         <div class="map-viewport" data-role="viewport" tabindex="0">
           <div class="map-world" data-role="world">
             <div class="map-canvas" data-role="board-content">
-              <div class="map-grid">
+              <div class="map-grid" data-role="vector-layer">
                 <article class="tile tile-sous-bois" data-biome="sous-bois">Sous bois</article>
                 <article class="tile tile-chemins" data-biome="chemins">Chemins</article>
                 <article class="tile tile-tundra" data-biome="tundra">Tundra</article>
@@ -59,6 +59,9 @@
         const MIN_SCALE = 0.35;
         const MAX_SCALE = 3;
         const ZOOM_STEP = 1.12;
+        const HD_ZOOM_THRESHOLD = 1.65;
+        const CARD_COLLISION_PADDING = 24;
+        const MAX_COLLISION_ITERATIONS = 80;
 
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
@@ -71,7 +74,8 @@
         const cards = [
           {
             id: 'perchoir',
-            src: 'Images/Perchoir.png',
+            previewSrc: 'Images/Perchoir.png',
+            fullSrc: 'Images/Perchoir.png',
             primaryBiome: 'interieurs',
             secondaryBiomes: ['ruines', 'bois'],
             x: null,
@@ -84,7 +88,8 @@
           },
           {
             id: 'pilier',
-            src: 'Images/Pilier.png',
+            previewSrc: 'Images/Pilier.png',
+            fullSrc: 'Images/Pilier.png',
             primaryBiome: 'falaises',
             secondaryBiomes: ['marecages', 'lacs-etangs'],
             x: null,
@@ -97,7 +102,8 @@
           },
           {
             id: 'colonne',
-            src: 'Images/Colonne.png',
+            previewSrc: 'Images/Colonne.png',
+            fullSrc: 'Images/Colonne.png',
             primaryBiome: 'ruines',
             secondaryBiomes: ['bois', 'sous-bois'],
             x: null,
@@ -110,7 +116,8 @@
           },
           {
             id: 'coeur',
-            src: 'Images/Coeur.png',
+            previewSrc: 'Images/Coeur.png',
+            fullSrc: 'Images/Coeur.png',
             primaryBiome: 'lacs-etangs',
             secondaryBiomes: ['marecages', 'sous-bois'],
             x: null,
@@ -123,7 +130,8 @@
           },
           {
             id: 'rocs',
-            src: 'Images/Rocs.png',
+            previewSrc: 'Images/Rocs.png',
+            fullSrc: 'Images/Rocs.png',
             primaryBiome: 'falaises',
             secondaryBiomes: ['rivieres', 'bois'],
             x: null,
@@ -136,7 +144,8 @@
           },
           {
             id: 'voute',
-            src: 'Images/Voute.png',
+            previewSrc: 'Images/Voute.png',
+            fullSrc: 'Images/Voute.png',
             primaryBiome: 'ruines',
             secondaryBiomes: ['lacs-etangs', 'bois'],
             x: null,
@@ -149,7 +158,8 @@
           },
           {
             id: 'recif',
-            src: 'Images/Recif.png',
+            previewSrc: 'Images/Recif.png',
+            fullSrc: 'Images/Recif.png',
             primaryBiome: 'ruines',
             secondaryBiomes: ['lacs-etangs', 'marecages'],
             x: null,
@@ -162,7 +172,8 @@
           },
           {
             id: 'oeuf',
-            src: 'Images/Oeuf.png',
+            previewSrc: 'Images/Oeuf.png',
+            fullSrc: 'Images/Oeuf.png',
             primaryBiome: 'bois',
             secondaryBiomes: ['ruines', 'sous-bois'],
             x: null,
@@ -175,7 +186,8 @@
           },
           {
             id: 'falaise',
-            src: 'Images/Falaise.png',
+            previewSrc: 'Images/Falaise.png',
+            fullSrc: 'Images/Falaise.png',
             primaryBiome: 'marecages',
             secondaryBiomes: ['falaises', 'rivieres'],
             x: null,
@@ -188,7 +200,8 @@
           },
           {
             id: 'cave',
-            src: 'Images/Cave.png',
+            previewSrc: 'Images/Cave.png',
+            fullSrc: 'Images/Cave.png',
             primaryBiome: 'marecages',
             secondaryBiomes: ['lacs-etangs', 'bois'],
             x: null,
@@ -201,7 +214,8 @@
           },
           {
             id: 'citrouille',
-            src: 'Images/Citrouille.png',
+            previewSrc: 'Images/Citrouille.png',
+            fullSrc: 'Images/Citrouille.png',
             primaryBiome: 'sous-bois',
             secondaryBiomes: ['interieurs', 'lacs-etangs'],
             x: null,
@@ -214,7 +228,8 @@
           },
           {
             id: 'source',
-            src: 'Images/Source.png',
+            previewSrc: 'Images/Source.png',
+            fullSrc: 'Images/Source.png',
             primaryBiome: 'marecages',
             secondaryBiomes: ['bois', 'lacs-etangs'],
             x: null,
@@ -227,7 +242,8 @@
           },
           {
             id: 'oeuf-colonnes',
-            src: 'Images/Oeuf.png',
+            previewSrc: 'Images/Oeuf.png',
+            fullSrc: 'Images/Oeuf.png',
             primaryBiome: 'lacs-etangs',
             secondaryBiomes: ['ruines', 'bois'],
             x: null,
@@ -251,10 +267,16 @@
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
+        const quantize = (value) => {
+          const dpr = window.devicePixelRatio || 1;
+          return Math.round(value * dpr) / dpr;
+        };
+
         const applyTransform = () => {
-          world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+          world.style.transform = `translate3d(${quantize(view.x)}px, ${quantize(view.y)}px, 0) scale(${view.scale})`;
           const percent = Math.round(view.scale * 100);
           zoomValue.textContent = `${percent}%`;
+          syncImageResolution();
         };
 
         const getBiomeCenters = () => {
@@ -306,33 +328,120 @@
           };
         };
 
+        const hasOverlap = (a, b, padding = CARD_COLLISION_PADDING) => {
+          const aLeft = a.x - padding;
+          const aTop = a.y - padding;
+          const aRight = a.x + a.width + padding;
+          const aBottom = a.y + a.height + padding;
+          const bLeft = b.x;
+          const bTop = b.y;
+          const bRight = b.x + b.width;
+          const bBottom = b.y + b.height;
+          return !(aRight < bLeft || bRight < aLeft || aBottom < bTop || bBottom < aTop);
+        };
+
+        const avoidCollisions = (items) => {
+          const maxX = boardContent.clientWidth;
+          const maxY = boardContent.clientHeight;
+
+          for (let iteration = 0; iteration < MAX_COLLISION_ITERATIONS; iteration += 1) {
+            let moved = false;
+
+            for (let i = 0; i < items.length; i += 1) {
+              for (let j = i + 1; j < items.length; j += 1) {
+                const a = items[i];
+                const b = items[j];
+
+                if (!hasOverlap(a, b)) {
+                  continue;
+                }
+
+                const centerAX = a.x + a.width / 2;
+                const centerAY = a.y + a.height / 2;
+                const centerBX = b.x + b.width / 2;
+                const centerBY = b.y + b.height / 2;
+
+                let dx = centerBX - centerAX;
+                let dy = centerBY - centerAY;
+                const distance = Math.hypot(dx, dy) || 1;
+
+                dx /= distance;
+                dy /= distance;
+
+                const push = 8;
+
+                a.x = clamp(a.x - dx * push, 0, Math.max(0, maxX - a.width));
+                a.y = clamp(a.y - dy * push, 0, Math.max(0, maxY - a.height));
+                b.x = clamp(b.x + dx * push, 0, Math.max(0, maxX - b.width));
+                b.y = clamp(b.y + dy * push, 0, Math.max(0, maxY - b.height));
+                moved = true;
+              }
+            }
+
+            if (!moved) {
+              break;
+            }
+          }
+
+          return items;
+        };
+
         const renderCards = () => {
           const biomeCenters = getBiomeCenters();
+          const resolvedCards = cards.map((card) => {
+            const position = resolveCardPosition(card, biomeCenters);
+            return {
+              ...card,
+              x: Math.round(position.x),
+              y: Math.round(position.y),
+            };
+          });
 
+          avoidCollisions(resolvedCards);
           overlays.innerHTML = '';
 
-          cards.forEach((card) => {
-            const position = resolveCardPosition(card, biomeCenters);
-            card.x = Math.round(position.x);
-            card.y = Math.round(position.y);
-
+          resolvedCards.forEach((card) => {
             const figure = document.createElement('figure');
             figure.className = 'board-card';
-            figure.style.left = `${card.x}px`;
-            figure.style.top = `${card.y}px`;
+            figure.style.left = `${Math.round(card.x)}px`;
+            figure.style.top = `${Math.round(card.y)}px`;
             figure.style.width = `${card.width}px`;
             figure.style.height = `${card.height}px`;
             figure.style.zIndex = String(card.zIndex ?? 1);
             figure.dataset.cardId = card.id;
 
             const image = document.createElement('img');
-            image.src = card.src;
+            image.src = card.previewSrc || card.fullSrc;
             image.alt = `${card.id} — biomes: ${[card.primaryBiome, ...card.secondaryBiomes].join(', ')}`;
             image.loading = 'lazy';
             image.decoding = 'async';
+            image.dataset.previewSrc = card.previewSrc || card.fullSrc;
+            image.dataset.fullSrc = card.fullSrc || card.previewSrc;
+            image.dataset.hd = 'false';
 
             figure.appendChild(image);
             overlays.appendChild(figure);
+          });
+
+          syncImageResolution();
+        };
+
+        const syncImageResolution = () => {
+          const shouldUseHd = view.scale >= HD_ZOOM_THRESHOLD;
+          overlays.querySelectorAll('img[data-full-src]').forEach((img) => {
+            const fullSrc = img.dataset.fullSrc;
+            const previewSrc = img.dataset.previewSrc;
+            const isHd = img.dataset.hd === 'true';
+
+            if (shouldUseHd && !isHd && fullSrc && img.src.indexOf(fullSrc) === -1) {
+              img.src = fullSrc;
+              img.dataset.hd = 'true';
+            } else if (!shouldUseHd && isHd && previewSrc && img.src.indexOf(previewSrc) === -1) {
+              img.src = previewSrc;
+              img.dataset.hd = 'false';
+            } else if (shouldUseHd && !isHd && fullSrc && img.src.indexOf(fullSrc) !== -1) {
+              img.dataset.hd = 'true';
+            }
           });
         };
 
@@ -387,23 +496,31 @@
           { passive: false }
         );
 
-        viewport.addEventListener('mousedown', (event) => {
-          if (event.button !== 1 || event.target.closest('.tile, .board-card, button, input, a, [data-no-pan]')) {
-            return;
-          }
+        viewport.addEventListener(
+          'mousedown',
+          (event) => {
+            if (event.button !== 1) {
+              return;
+            }
 
-          event.preventDefault();
-          view.dragging = true;
-          view.dragX = event.clientX - view.x;
-          view.dragY = event.clientY - view.y;
-          viewport.classList.add('is-dragging');
-        });
-
-        viewport.addEventListener('auxclick', (event) => {
-          if (event.button === 1) {
             event.preventDefault();
-          }
-        });
+            view.dragging = true;
+            view.dragX = event.clientX - view.x;
+            view.dragY = event.clientY - view.y;
+            viewport.classList.add('is-dragging');
+          },
+          true
+        );
+
+        viewport.addEventListener(
+          'auxclick',
+          (event) => {
+            if (event.button === 1) {
+              event.preventDefault();
+            }
+          },
+          true
+        );
 
         window.addEventListener('mousemove', (event) => {
           if (!view.dragging) {
