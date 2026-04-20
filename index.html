@@ -57,7 +57,7 @@
     <script>
       (() => {
         const MIN_SCALE = 0.35;
-        const MAX_SCALE = 2.5;
+        const MAX_SCALE = 3;
         const ZOOM_STEP = 1.12;
 
         const viewport = document.querySelector('[data-role="viewport"]');
@@ -70,56 +70,173 @@
 
         const cards = [
           {
-            id: 'image-01',
-            src: 'assets/images/image-01.svg',
-            primaryBiome: 'lacs-etangs',
-            secondaryBiomes: ['marecages', 'falaises'],
-            x: null,
-            y: null,
-            width: 186,
-            height: 248,
-            zIndex: 4,
-            offsetX: 28,
-            offsetY: -14,
-          },
-          {
-            id: 'image-02',
-            src: 'assets/images/image-02.svg',
-            primaryBiome: 'sous-bois',
-            secondaryBiomes: ['bois-profonds', 'ruines'],
-            x: null,
-            y: null,
-            width: 176,
-            height: 236,
-            zIndex: 5,
-            offsetX: -48,
-            offsetY: 34,
-          },
-          {
-            id: 'image-03',
-            src: 'assets/images/image-03.svg',
-            primaryBiome: 'marecages',
-            secondaryBiomes: ['lacs-etangs', 'bois-profonds'],
-            x: null,
-            y: null,
-            width: 170,
-            height: 230,
-            zIndex: 6,
-            offsetX: -12,
-            offsetY: 22,
-          },
-          {
-            id: 'image-04',
-            src: 'assets/images/image-04.svg',
-            primaryBiome: 'ruines',
-            secondaryBiomes: ['interieurs', 'sous-bois'],
+            id: 'perchoir',
+            src: 'Images/Perchoir.png',
+            primaryBiome: 'interieurs',
+            secondaryBiomes: ['ruines', 'bois'],
             x: null,
             y: null,
             width: 180,
-            height: 242,
+            height: 298,
+            zIndex: 4,
+            offsetX: 18,
+            offsetY: -10,
+          },
+          {
+            id: 'pilier',
+            src: 'Images/Pilier.png',
+            primaryBiome: 'falaises',
+            secondaryBiomes: ['marecages', 'lacs-etangs'],
+            x: null,
+            y: null,
+            width: 180,
+            height: 298,
+            zIndex: 5,
+            offsetX: -22,
+            offsetY: 14,
+          },
+          {
+            id: 'colonne',
+            src: 'Images/Colonne.png',
+            primaryBiome: 'ruines',
+            secondaryBiomes: ['bois', 'sous-bois'],
+            x: null,
+            y: null,
+            width: 182,
+            height: 272,
+            zIndex: 6,
+            offsetX: -8,
+            offsetY: 8,
+          },
+          {
+            id: 'coeur',
+            src: 'Images/Coeur.png',
+            primaryBiome: 'lacs-etangs',
+            secondaryBiomes: ['marecages', 'sous-bois'],
+            x: null,
+            y: null,
+            width: 170,
+            height: 282,
+            zIndex: 6,
+            offsetX: -14,
+            offsetY: 22,
+          },
+          {
+            id: 'rocs',
+            src: 'Images/Rocs.png',
+            primaryBiome: 'falaises',
+            secondaryBiomes: ['rivieres', 'bois'],
+            x: null,
+            y: null,
+            width: 188,
+            height: 282,
+            zIndex: 5,
+            offsetX: 6,
+            offsetY: 24,
+          },
+          {
+            id: 'voute',
+            src: 'Images/Voute.png',
+            primaryBiome: 'ruines',
+            secondaryBiomes: ['lacs-etangs', 'bois'],
+            x: null,
+            y: null,
+            width: 188,
+            height: 282,
+            zIndex: 6,
+            offsetX: 26,
+            offsetY: -22,
+          },
+          {
+            id: 'recif',
+            src: 'Images/Recif.png',
+            primaryBiome: 'ruines',
+            secondaryBiomes: ['lacs-etangs', 'marecages'],
+            x: null,
+            y: null,
+            width: 182,
+            height: 274,
             zIndex: 7,
-            offsetX: -32,
+            offsetX: 24,
+            offsetY: 14,
+          },
+          {
+            id: 'oeuf',
+            src: 'Images/Oeuf.png',
+            primaryBiome: 'bois',
+            secondaryBiomes: ['ruines', 'sous-bois'],
+            x: null,
+            y: null,
+            width: 184,
+            height: 274,
+            zIndex: 7,
+            offsetX: -24,
+            offsetY: -16,
+          },
+          {
+            id: 'falaise',
+            src: 'Images/Falaise.png',
+            primaryBiome: 'marecages',
+            secondaryBiomes: ['falaises', 'rivieres'],
+            x: null,
+            y: null,
+            width: 176,
+            height: 286,
+            zIndex: 5,
+            offsetX: -16,
+            offsetY: 30,
+          },
+          {
+            id: 'cave',
+            src: 'Images/Cave.png',
+            primaryBiome: 'marecages',
+            secondaryBiomes: ['lacs-etangs', 'bois'],
+            x: null,
+            y: null,
+            width: 194,
+            height: 262,
+            zIndex: 6,
+            offsetX: -6,
+            offsetY: 26,
+          },
+          {
+            id: 'citrouille',
+            src: 'Images/Citrouille.png',
+            primaryBiome: 'sous-bois',
+            secondaryBiomes: ['interieurs', 'lacs-etangs'],
+            x: null,
+            y: null,
+            width: 220,
+            height: 206,
+            zIndex: 6,
+            offsetX: 20,
+            offsetY: 14,
+          },
+          {
+            id: 'source',
+            src: 'Images/Source.png',
+            primaryBiome: 'marecages',
+            secondaryBiomes: ['bois', 'lacs-etangs'],
+            x: null,
+            y: null,
+            width: 184,
+            height: 274,
+            zIndex: 7,
+            offsetX: 34,
             offsetY: -20,
+          },
+          {
+            id: 'oeuf-colonnes',
+            src: 'Images/Oeuf.png',
+            primaryBiome: 'lacs-etangs',
+            secondaryBiomes: ['ruines', 'bois'],
+            x: null,
+            y: null,
+            width: 182,
+            height: 272,
+            zIndex: 8,
+            offsetX: -30,
+            offsetY: 34,
           },
         ];
 
@@ -271,14 +388,21 @@
         );
 
         viewport.addEventListener('mousedown', (event) => {
-          if (event.button !== 0 || event.target.closest('.tile, .board-card, button, input, a, [data-no-pan]')) {
+          if (event.button !== 1 || event.target.closest('.tile, .board-card, button, input, a, [data-no-pan]')) {
             return;
           }
 
+          event.preventDefault();
           view.dragging = true;
           view.dragX = event.clientX - view.x;
           view.dragY = event.clientY - view.y;
           viewport.classList.add('is-dragging');
+        });
+
+        viewport.addEventListener('auxclick', (event) => {
+          if (event.button === 1) {
+            event.preventDefault();
+          }
         });
 
         window.addEventListener('mousemove', (event) => {
