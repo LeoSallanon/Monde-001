@@ -21,7 +21,11 @@
   --modal-overlay: rgba(22, 24, 26, 0.26);
   --guide-bg: rgba(255, 255, 255, 0.58);
   --guide-border: rgba(66, 72, 76, 0.2);
-  --guide-icon-bg: #fff;
+  --guide-icon-bg: rgba(255, 255, 255, 0.64);
+  --guide-title: color-mix(in srgb, var(--ink) 68%, transparent);
+  --guide-text: color-mix(in srgb, var(--ink) 76%, transparent);
+  --guide-icon-stroke: color-mix(in srgb, var(--ink) 74%, transparent);
+  --tile-title: rgba(36, 42, 49, 0.55);
 
   --mist: #ebe9e0;
   --sand: #d8ccab;
@@ -61,7 +65,13 @@
   --modal-overlay: rgba(0, 0, 0, 0.48);
   --guide-bg: rgba(17, 20, 27, 0.55);
   --guide-border: rgba(177, 193, 215, 0.26);
-  --guide-icon-bg: rgba(19, 22, 29, 0.82);
+  --guide-icon-bg: rgba(24, 28, 35, 0.58);
+  --guide-title: rgba(216, 227, 244, 0.76);
+  --guide-text: rgba(203, 216, 236, 0.78);
+  --guide-icon-stroke: rgba(214, 226, 245, 0.86);
+  --tile-title: rgba(9, 13, 18, 0.64);
+  --card-border: rgba(146, 161, 182, 0.64);
+  --card-border-hover: rgba(118, 137, 162, 0.88);
 }
 
 * {
@@ -97,6 +107,9 @@ body {
 }
 
 .hero {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 0.68rem;
   padding: clamp(1rem, 2.5vw, 1.65rem) clamp(0.8rem, 2vw, 1.25rem);
   opacity: 0.95;
   border-radius: 20px;
@@ -141,12 +154,47 @@ body {
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.38rem;
+  gap: 0.4rem;
+  width: fit-content;
+  padding: 0.44rem 0.72rem 0.44rem 0.52rem;
   cursor: pointer;
+  letter-spacing: 0.005em;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.theme-toggle:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, var(--chip-border) 48%, var(--chip-text) 52%);
 }
 
 .theme-toggle__icon {
-  font-size: 0.92rem;
+  width: 1.06rem;
+  height: 1.06rem;
+  display: inline-grid;
+  place-items: center;
+}
+
+.theme-toggle__glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 1.06rem;
+  height: 1.06rem;
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+  grid-area: 1 / 1;
+}
+
+.theme-toggle[data-theme-mode="light"] .theme-toggle__glyph--moon,
+.theme-toggle[data-theme-mode="dark"] .theme-toggle__glyph--sun {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .hero__toggle {
@@ -154,17 +202,20 @@ body {
 }
 
 .hero-guide {
-  margin-top: 0.85rem;
+  margin-top: 0.2rem;
   border: 1px solid var(--guide-border);
-  border-radius: 16px;
+  border-radius: 15px;
   background: var(--guide-bg);
-  padding: 0.7rem;
+  padding: 0.62rem 0.66rem;
 }
 
 .hero-guide__title {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  margin: 0 0 0.44rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--guide-title);
 }
 
 .hero-guide__list {
@@ -172,40 +223,54 @@ body {
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.38rem;
 }
 
 .hero-guide__item {
   display: grid;
-  grid-template-columns: 1.75rem minmax(0, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: 1.52rem minmax(0, 1fr);
+  gap: 0.42rem;
   align-items: center;
 }
 
 .hero-guide__item p {
   margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.28;
+  font-size: 0.77rem;
+  line-height: 1.3;
+  color: var(--guide-text);
 }
 
 .hero-guide__icon {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 10px;
-  border: 1px solid var(--chip-border);
+  width: 1.52rem;
+  height: 1.52rem;
+  border-radius: 9px;
+  border: 1px solid color-mix(in srgb, var(--guide-border) 78%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 0.78rem;
   background: var(--guide-icon-bg);
 }
 
+.hero-guide__icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: var(--guide-icon-stroke);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .hero__description {
-  margin: 0.7rem 0 0;
+  margin: 0;
   max-width: 27ch;
   font-size: 0.9rem;
   line-height: 1.42;
+}
+
+.hero__footer {
+  align-self: end;
+  padding-top: 0.25rem;
 }
 
 .map-shell {
@@ -526,11 +591,11 @@ body.modal-open {
   background-size: 12px 12px, auto;
   background-blend-mode: overlay;
   user-select: none;
-  color: color-mix(in srgb, var(--ink) 82%, #0f1114 18%);
+  color: var(--tile-title);
 }
 
 [data-theme="dark"] .tile {
-  filter: saturate(0.8) brightness(0.76);
+  filter: saturate(0.84) brightness(0.82);
   border-color: rgba(206, 220, 240, 0.32);
 }
 
@@ -655,8 +720,8 @@ body.modal-open {
   }
 
   .hero {
+    grid-template-rows: auto auto auto auto;
     padding: 0.75rem 0.85rem;
-    display: grid;
     gap: 0.45rem;
   }
 
@@ -668,6 +733,10 @@ body.modal-open {
 
   .theme-toggle {
     padding-inline: 0.62rem;
+  }
+
+  .hero__footer {
+    padding-top: 0;
   }
 
   .hero h1 {
