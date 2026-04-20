@@ -458,7 +458,7 @@ body {
   max-width: 100%;
   height: auto;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   max-height: min(74vh, 760px);
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--card-border) 65%, transparent);
