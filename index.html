@@ -73,9 +73,20 @@
           <p class="artwork-modal__dimensions" data-role="modal-dimensions"></p>
           <p class="artwork-modal__tags" data-role="modal-tags"></p>
           <p class="artwork-modal__excerpt" data-role="modal-excerpt"></p>
-          <figure class="artwork-modal__detail" data-role="modal-detail" hidden>
-            <img data-role="modal-detail-image" alt="" />
-          </figure>
+          <div class="artwork-modal__alt-media" data-role="modal-alt-media" hidden>
+            <button
+              type="button"
+              class="artwork-modal__swap"
+              data-action="swap-modal-images"
+              aria-label="Permuter les visuels"
+            >
+              ↻
+            </button>
+            <figure class="artwork-modal__detail" data-role="modal-detail">
+              <img data-role="modal-detail-image" alt="" />
+            </figure>
+            <p class="artwork-modal__detail-label" data-role="modal-detail-label"></p>
+          </div>
         </div>
       </article>
     </div>
@@ -99,8 +110,11 @@
         const modalDimensions = document.querySelector('[data-role="modal-dimensions"]');
         const modalTags = document.querySelector('[data-role="modal-tags"]');
         const modalExcerpt = document.querySelector('[data-role="modal-excerpt"]');
+        const modalAltMedia = document.querySelector('[data-role="modal-alt-media"]');
         const modalDetail = document.querySelector('[data-role="modal-detail"]');
         const modalDetailImage = document.querySelector('[data-role="modal-detail-image"]');
+        const modalDetailLabel = document.querySelector('[data-role="modal-detail-label"]');
+        const modalSwapButton = document.querySelector('[data-action="swap-modal-images"]');
 
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
@@ -108,13 +122,14 @@
         let focusedBeforeModal = null;
         let mobileInfoCollapsed = true;
 
+        /** @typedef {"drawing" | "generated"} ModalImageMode */
+
         const ARTWORK_LAYOUTS = [
           {
             id: 'baignoire-suspendue',
             title: 'Baignoire suspendue',
-            previewSrc: 'Images/Perchoir.png',
-            fullSrc: 'Images/Perchoir.png',
-            detailSrc: 'Images/Perchoir.png',
+            generatedSrc: 'Images/Generated/Baignoire suspendue.png',
+            drawingSrc: 'Images/Dessins/Baignoire suspendue_resultat.jpg',
             tags: ['bois', 'sous-bois'],
             dimensions: 'Dimensions du dessin : 440 × 760 mm',
             excerpt: 'Support : feuille 300 g, 575x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
@@ -131,8 +146,8 @@
           {
             id: 'statue-verticale-grise',
             title: 'Statue verticale grise',
-            previewSrc: 'Images/Pilier.png',
-            fullSrc: 'Images/Pilier.png',
+            generatedSrc: 'Images/Generated/Statue verticale grise.png',
+            drawingSrc: 'Images/Dessins/Ruine-porche_resultat.jpg',
             tags: ['falaises', 'marécages', 'lacs'],
             dimensions: 'Dimensions : 110 × 74 cm',
             excerpt: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pellentesque habitant morbi tristique senectus.',
@@ -149,8 +164,8 @@
           {
             id: 'ruine-porche',
             title: 'Ruine-porche',
-            previewSrc: 'Images/Colonne.png',
-            fullSrc: 'Images/Colonne.png',
+            generatedSrc: 'Images/Generated/Ruine-porche.png',
+            drawingSrc: 'Images/Dessins/Ruine-porche_resultat.jpg',
             tags: ['ruines', 'bois'],
             dimensions: 'Dimensions : 71 × 48 cm',
             excerpt: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
@@ -167,8 +182,8 @@
           {
             id: 'coeur',
             title: 'Cœur des étangs',
-            previewSrc: 'Images/Coeur.png',
-            fullSrc: 'Images/Coeur.png',
+            generatedSrc: 'Images/Generated/Cœur des étangs.png',
+            drawingSrc: 'Images/Dessins/Bassines Champignons_resultat.jpg',
             tags: ['lacs-etangs', 'marécages', 'bois'],
             dimensions: 'Dimensions : 88 × 57 cm',
             excerpt: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
@@ -185,8 +200,8 @@
           {
             id: 'figure-drapee-claire',
             title: 'Figure drapée claire',
-            previewSrc: 'Images/Rocs.png',
-            fullSrc: 'Images/Rocs.png',
+            generatedSrc: 'Images/Generated/Figure drapée claire.png',
+            drawingSrc: 'Images/Dessins/Forme maraicageuse_resultat.jpg',
             tags: ['montagnes', 'rivières'],
             dimensions: 'Dimensions : 97 × 64 cm',
             excerpt: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
@@ -203,8 +218,8 @@
           {
             id: 'fleur-blanche-verticale',
             title: 'Fleur blanche verticale',
-            previewSrc: 'Images/Voute.png',
-            fullSrc: 'Images/Voute.png',
+            generatedSrc: 'Images/Generated/Voute.png',
+            drawingSrc: 'Images/Dessins/Source liminale_resultat.jpg',
             tags: ['bois-profonds', 'marécages'],
             dimensions: 'Dimensions : 92 × 61 cm',
             excerpt: 'Fusce at magna vitae est cursus dignissim. Curabitur laoreet dui nec sem tristique, sed dapibus leo sollicitudin.',
@@ -221,8 +236,8 @@
           {
             id: 'oeuf-gris-monumental',
             title: 'Œuf gris monumental',
-            previewSrc: 'Images/Recif.png',
-            fullSrc: 'Images/Recif.png',
+            generatedSrc: 'Images/Generated/Relique du sous-bois.png',
+            drawingSrc: 'Images/Dessins/Grappe d’œufs clairs_resultat.jpg',
             tags: ['ruines', 'bois', 'marécages'],
             dimensions: 'Dimensions : 84 × 55 cm',
             excerpt: 'Integer nec odio praesent libero sed cursus ante dapibus diam. Sed nisi nulla quis sem at nibh elementum.',
@@ -239,8 +254,8 @@
           {
             id: 'grappe-oeufs-clairs',
             title: 'Grappe d’œufs clairs',
-            previewSrc: 'Images/Oeuf.png',
-            fullSrc: 'Images/Oeuf.png',
+            generatedSrc: 'Images/Generated/Grappe d’œufs clairs.png',
+            drawingSrc: 'Images/Dessins/Grappe d’œufs clairs_resultat.jpg',
             tags: ['bois', 'ruines', 'sous-bois'],
             dimensions: 'Dimensions : 89 × 59 cm',
             excerpt: 'Nam nec ante sed lacinia urna non tincidunt mattis tortor. Morbi lectus risus iaculis vel suscipit quis luctus.',
@@ -257,8 +272,8 @@
           {
             id: 'vignette-bleutee-bas',
             title: 'Vignette bleutée',
-            previewSrc: 'Images/Falaise.png',
-            fullSrc: 'Images/Falaise.png',
+            generatedSrc: 'Images/Generated/Falaise bleutée.png',
+            drawingSrc: 'Images/Dessins/Bord de rivière_resultat.jpg',
             tags: ['rivières'],
             dimensions: 'Dimensions : 95 × 63 cm',
             excerpt: 'Praesent mauris fusce nec tellus sed augue semper porta. Mauris massa vestibulum lacinia arcu eget nulla.',
@@ -275,8 +290,8 @@
           {
             id: 'arche-bleutee',
             title: 'Arche bleutée',
-            previewSrc: 'Images/Cave.png',
-            fullSrc: 'Images/Cave.png',
+            generatedSrc: 'Images/Generated/Arche bleutée.png',
+            drawingSrc: 'Images/Dessins/Source liminale_resultat.jpg',
             tags: ['marécages', 'lacs-etangs'],
             dimensions: 'Dimensions : 102 × 66 cm',
             excerpt: 'Class aptent taciti sociosqu ad litora torquent per conubia nostra per inceptos himenaeos. Curabitur sodales ligula.',
@@ -293,8 +308,8 @@
           {
             id: 'relique-sous-bois',
             title: 'Relique du sous-bois',
-            previewSrc: 'Images/Citrouille.png',
-            fullSrc: 'Images/Citrouille.png',
+            generatedSrc: 'Images/Generated/Relique du sous-bois.png',
+            drawingSrc: 'Images/Dessins/Bassines Champignons_resultat.jpg',
             tags: ['marécages', 'lacs', 'bois'],
             dimensions: 'Dimensions : 78 × 52 cm',
             excerpt: 'Suspendisse potenti in eleifend quam a odio in hac habitasse platea dictumst. Quisque volutpat condimentum velit.',
@@ -311,8 +326,8 @@
           {
             id: 'source-liminale',
             title: 'Source liminale',
-            previewSrc: 'Images/Source.png',
-            fullSrc: 'Images/Source.png',
+            generatedSrc: 'Images/Generated/Source liminale.png',
+            drawingSrc: 'Images/Dessins/Source liminale_resultat.jpg',
             tags: ['marécages', 'bois', 'lacs'],
             dimensions: 'Dimensions : 96 × 62 cm',
             excerpt: 'Aliquam lorem ante dapibus in viverra quis feugiat a tellus. Phasellus viverra nulla ut metus varius laoreet.',
@@ -328,6 +343,11 @@
           },
         ];
 
+        ARTWORK_LAYOUTS.forEach((artwork) => {
+          artwork.previewSrc = artwork.generatedSrc;
+          artwork.fullSrc = artwork.generatedSrc;
+        });
+
         const view = {
           scale: 1,
           x: 0,
@@ -338,6 +358,9 @@
         };
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        /** @type {ModalImageMode} */
+        let modalImageMode = 'drawing';
+        let currentModalArtwork = null;
 
         const quantize = (value) => {
           const dpr = window.devicePixelRatio || 1;
@@ -502,20 +525,30 @@
           focusedBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
           modalTitle.textContent = card.title;
-          modalImage.src = card.fullSrc || card.previewSrc;
+          modalImageMode = 'drawing';
+          currentModalArtwork = card;
+          const largeSrc = modalImageMode === 'drawing' ? card.drawingSrc : card.generatedSrc;
+          const smallSrc = modalImageMode === 'drawing' ? card.generatedSrc : card.drawingSrc;
+          const smallLabel = modalImageMode === 'drawing' ? 'base' : 'dessin';
+
+          modalImage.src = largeSrc;
           modalImage.alt = card.title;
           modalImage.dataset.modalVariant = card.modalVariant || 'portrait';
           modalDimensions.textContent = card.dimensions;
           modalTags.textContent = `Tags : ${card.tags.join(' · ')}`;
           modalExcerpt.textContent = card.excerpt;
-          if (card.detailSrc) {
+          if (card.generatedSrc && card.drawingSrc) {
+            modalAltMedia.hidden = false;
             modalDetail.hidden = false;
-            modalDetailImage.src = card.detailSrc;
-            modalDetailImage.alt = `${card.title} — détail`;
+            modalDetailImage.src = smallSrc;
+            modalDetailImage.alt = `${card.title} — aperçu ${smallLabel}`;
+            modalDetailLabel.textContent = smallLabel;
           } else {
+            modalAltMedia.hidden = true;
             modalDetail.hidden = true;
             modalDetailImage.removeAttribute('src');
             modalDetailImage.alt = '';
+            modalDetailLabel.textContent = '';
           }
 
           const panel = modal.querySelector('.artwork-modal__panel');
@@ -529,6 +562,22 @@
           });
         };
 
+        const toggleModalImages = () => {
+          if (!currentModalArtwork) {
+            return;
+          }
+          modalImageMode = modalImageMode === 'drawing' ? 'generated' : 'drawing';
+          const largeSrc = modalImageMode === 'drawing' ? currentModalArtwork.drawingSrc : currentModalArtwork.generatedSrc;
+          const smallSrc = modalImageMode === 'drawing' ? currentModalArtwork.generatedSrc : currentModalArtwork.drawingSrc;
+          const smallLabel = modalImageMode === 'drawing' ? 'base' : 'dessin';
+
+          modalImage.src = largeSrc;
+          modalImage.alt = currentModalArtwork.title;
+          modalDetailImage.src = smallSrc;
+          modalDetailImage.alt = `${currentModalArtwork.title} — aperçu ${smallLabel}`;
+          modalDetailLabel.textContent = smallLabel;
+        };
+
         const closeModal = () => {
           if (modal.hidden) {
             return;
@@ -536,6 +585,7 @@
 
           modal.hidden = true;
           document.body.classList.remove('modal-open');
+          currentModalArtwork = null;
 
           if (focusedBeforeModal) {
             focusedBeforeModal.focus();
@@ -653,6 +703,9 @@
             closeModal();
           }
         });
+
+        modalSwapButton?.addEventListener('click', toggleModalImages);
+        modalDetail?.addEventListener('click', toggleModalImages);
 
         window.addEventListener('mousemove', (event) => {
           if (!view.dragging) {
