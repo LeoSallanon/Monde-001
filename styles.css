@@ -1,6 +1,29 @@
 :root {
   --bg: #f2f2ef;
   --ink: #2f3132;
+  --panel-bg: rgba(248, 248, 245, 0.82);
+  --panel-border: rgba(82, 90, 96, 0.14);
+  --panel-shadow: 0 4px 12px rgba(34, 40, 44, 0.05);
+  --chip-bg: rgba(252, 252, 249, 0.9);
+  --chip-border: rgba(65, 70, 74, 0.24);
+  --chip-text: #25292b;
+  --viewport-bg:
+    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.58), transparent 46%),
+    radial-gradient(circle at 80% 90%, rgba(168, 191, 223, 0.18), transparent 40%),
+    rgba(249, 249, 246, 0.92);
+  --viewport-border: rgba(95, 102, 109, 0.16);
+  --connector-stroke: rgba(24, 28, 30, 0.52);
+  --connector-dot: rgba(24, 28, 30, 0.76);
+  --card-bg: rgba(249, 249, 246, 0.94);
+  --card-border: rgba(8, 10, 11, 0.52);
+  --card-border-hover: rgba(6, 8, 10, 0.62);
+  --card-shadow: 0 7px 15px rgba(20, 24, 28, 0.14);
+  --modal-bg: rgba(251, 250, 246, 0.97);
+  --modal-border: rgba(66, 72, 76, 0.23);
+  --modal-overlay: rgba(22, 24, 26, 0.26);
+  --guide-bg: rgba(255, 255, 255, 0.58);
+  --guide-border: rgba(66, 72, 76, 0.2);
+  --guide-icon-bg: #fff;
 
   --mist: #ebe9e0;
   --sand: #d8ccab;
@@ -15,6 +38,34 @@
 
   --radius: 34px;
   --shadow: 0 10px 24px rgba(34, 40, 44, 0.08);
+}
+
+[data-theme="dark"] {
+  --bg: #171a1f;
+  --ink: #e9edf3;
+  --panel-bg: rgba(27, 31, 38, 0.84);
+  --panel-border: rgba(174, 189, 212, 0.24);
+  --panel-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  --chip-bg: rgba(34, 38, 46, 0.9);
+  --chip-border: rgba(177, 191, 213, 0.3);
+  --chip-text: #f2f6fc;
+  --viewport-bg:
+    radial-gradient(circle at 25% 20%, rgba(134, 161, 192, 0.2), transparent 44%),
+    radial-gradient(circle at 80% 90%, rgba(96, 119, 149, 0.28), transparent 40%),
+    rgba(19, 22, 28, 0.95);
+  --viewport-border: rgba(162, 177, 197, 0.28);
+  --connector-stroke: rgba(209, 219, 231, 0.62);
+  --connector-dot: rgba(225, 233, 245, 0.85);
+  --card-bg: rgba(34, 39, 47, 0.94);
+  --card-border: rgba(220, 231, 245, 0.55);
+  --card-border-hover: rgba(238, 245, 255, 0.78);
+  --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.48);
+  --modal-bg: rgba(27, 31, 37, 0.97);
+  --modal-border: rgba(190, 202, 219, 0.26);
+  --modal-overlay: rgba(0, 0, 0, 0.48);
+  --guide-bg: rgba(17, 20, 27, 0.55);
+  --guide-border: rgba(177, 193, 215, 0.26);
+  --guide-icon-bg: rgba(19, 22, 29, 0.82);
 }
 
 * {
@@ -53,9 +104,9 @@ body {
   padding: clamp(1rem, 2.5vw, 1.65rem) clamp(0.8rem, 2vw, 1.25rem);
   opacity: 0.95;
   border-radius: 20px;
-  background: rgba(248, 248, 245, 0.82);
-  border: 1px solid rgba(82, 90, 96, 0.14);
-  box-shadow: 0 4px 12px rgba(34, 40, 44, 0.05);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
 }
 
 .hero h1 {
@@ -74,15 +125,84 @@ body {
   gap: 0.8rem;
 }
 
+.hero__actions {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.theme-toggle,
 .hero__toggle {
-  display: none;
-  border: 1px solid rgba(65, 70, 74, 0.25);
-  background: rgba(252, 252, 249, 0.9);
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
   border-radius: 999px;
-  color: #25292b;
+  color: var(--chip-text);
   font-size: 0.82rem;
   line-height: 1;
-  padding: 0.42rem 0.72rem;
+  padding: 0.46rem 0.74rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  cursor: pointer;
+}
+
+.theme-toggle__icon {
+  font-size: 0.92rem;
+}
+
+.hero__toggle {
+  display: none;
+}
+
+.hero-guide {
+  margin-top: 0.85rem;
+  border: 1px solid var(--guide-border);
+  border-radius: 16px;
+  background: var(--guide-bg);
+  padding: 0.7rem;
+}
+
+.hero-guide__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.hero-guide__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.hero-guide__item {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.hero-guide__item p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.28;
+}
+
+.hero-guide__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--chip-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.78rem;
+  background: var(--guide-icon-bg);
 }
 
 .hero__description {
@@ -111,12 +231,12 @@ body {
 .reset-chip,
 .zoom-chip {
   border-radius: 999px;
-  border: 1px solid rgba(65, 70, 74, 0.24);
-  background: rgba(252, 252, 249, 0.9);
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
   box-shadow: 0 6px 14px rgba(34, 40, 44, 0.08);
   font-size: 0.92rem;
   line-height: 1;
-  color: #25292b;
+  color: var(--chip-text);
 }
 
 .reset-chip {
@@ -137,11 +257,8 @@ body {
   border-radius: 24px;
   min-height: 0;
   height: calc(100vh - 0.9rem);
-  border: 1px solid rgba(95, 102, 109, 0.16);
-  background:
-    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.58), transparent 46%),
-    radial-gradient(circle at 80% 90%, rgba(168, 191, 223, 0.18), transparent 40%),
-    rgba(249, 249, 246, 0.92);
+  border: 1px solid var(--viewport-border);
+  background: var(--viewport-bg);
   cursor: grab;
 }
 
@@ -182,22 +299,22 @@ body {
 
 .map-connector__path {
   fill: none;
-  stroke: rgba(24, 28, 30, 0.52);
+  stroke: var(--connector-stroke);
   stroke-width: 1.05;
   stroke-linecap: round;
 }
 
 .map-connector__dot {
-  fill: rgba(24, 28, 30, 0.76);
+  fill: var(--connector-dot);
 }
 
 .board-card {
   position: absolute;
   margin: 0;
-  border: 2px solid rgba(8, 10, 11, 0.52);
+  border: 2px solid var(--card-border);
   border-radius: 18px;
   overflow: hidden;
-  background: rgba(249, 249, 246, 0.94);
+  background: var(--card-bg);
   pointer-events: auto;
   cursor: pointer;
   transform: translateY(0);
@@ -205,13 +322,12 @@ body {
     transform 180ms ease,
     box-shadow 220ms ease,
     border-color 220ms ease;
-  box-shadow:
-    0 7px 15px rgba(20, 24, 28, 0.14);
+  box-shadow: var(--card-shadow);
 }
 
 .board-card:is(:hover, :focus-visible) {
   transform: translateY(-3px);
-  border-color: rgba(6, 8, 10, 0.62);
+  border-color: var(--card-border-hover);
   box-shadow:
     0 10px 22px rgba(20, 24, 28, 0.2);
 }
@@ -255,7 +371,7 @@ body {
 .artwork-modal__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(22, 24, 26, 0.26);
+  background: var(--modal-overlay);
   backdrop-filter: blur(2px);
 }
 
@@ -266,8 +382,8 @@ body {
   max-height: 90vh;
   overflow: auto;
   border-radius: 22px;
-  border: 1px solid rgba(66, 72, 76, 0.23);
-  background: rgba(251, 250, 246, 0.97);
+  border: 1px solid var(--modal-border);
+  background: var(--modal-bg);
   box-shadow: 0 22px 52px rgba(17, 21, 26, 0.2);
   padding: clamp(1.2rem, 2.4vw, 2rem);
   display: grid;
@@ -285,8 +401,8 @@ body {
   height: 2rem;
   font-size: 1.35rem;
   line-height: 1;
-  color: rgba(25, 30, 34, 0.86);
-  background: rgba(247, 247, 244, 0.88);
+  color: var(--chip-text);
+  background: var(--chip-bg);
   cursor: pointer;
 }
 
@@ -345,7 +461,7 @@ body {
 }
 
 .artwork-modal__tags {
-  color: rgba(44, 49, 54, 0.84);
+  color: color-mix(in srgb, var(--ink) 84%, transparent);
 }
 
 .artwork-modal__excerpt {
@@ -355,11 +471,11 @@ body {
 .artwork-modal__detail {
   margin: 0;
   width: min(140px, 100%);
-  border: 2px solid rgba(8, 10, 11, 0.52);
+  border: 2px solid var(--card-border);
   border-radius: 20px;
   overflow: hidden;
-  background: rgba(249, 249, 246, 0.94);
-  box-shadow: 0 7px 15px rgba(20, 24, 28, 0.14);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
   cursor: pointer;
 }
 
@@ -384,9 +500,9 @@ body {
   width: 1.45rem;
   height: 1.45rem;
   border-radius: 999px;
-  border: 1px solid rgba(20, 23, 25, 0.45);
-  background: rgba(255, 255, 255, 0.86);
-  color: rgba(20, 23, 25, 0.85);
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -434,6 +550,12 @@ body.modal-open {
   background-size: 12px 12px, auto;
   background-blend-mode: overlay;
   user-select: none;
+  color: color-mix(in srgb, var(--ink) 82%, #0f1114 18%);
+}
+
+[data-theme="dark"] .tile {
+  filter: saturate(0.8) brightness(0.76);
+  border-color: rgba(206, 220, 240, 0.32);
 }
 
 .tile-sous-bois {
@@ -566,6 +688,10 @@ body.modal-open {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .theme-toggle {
+    padding-inline: 0.62rem;
   }
 
   .hero h1 {

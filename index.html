@@ -17,15 +17,38 @@
       <header class="hero">
         <div class="hero__topline">
           <h1>cartographie Monde-001</h1>
-          <button type="button" class="hero__toggle" data-action="toggle-hero-info" aria-expanded="true">
-            Infos
-          </button>
+          <div class="hero__actions">
+            <button type="button" class="theme-toggle" data-action="toggle-theme" aria-pressed="false">
+              <span class="theme-toggle__icon" data-role="theme-icon" aria-hidden="true">🌙</span>
+              <span data-role="theme-label">Mode sombre</span>
+            </button>
+            <button type="button" class="hero__toggle" data-action="toggle-hero-info" aria-expanded="true">
+              Infos
+            </button>
+          </div>
         </div>
         <p class="hero__description" data-role="hero-description">
           Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
           scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
           plume.
         </p>
+        <section class="hero-guide" aria-label="Aide de navigation">
+          <h2 class="hero-guide__title">Navigation de la carte</h2>
+          <ul class="hero-guide__list">
+            <li class="hero-guide__item">
+              <span class="hero-guide__icon" aria-hidden="true">L</span>
+              <p>Clic gauche : interagissez avec une image pour ouvrir son détail.</p>
+            </li>
+            <li class="hero-guide__item">
+              <span class="hero-guide__icon" aria-hidden="true">M</span>
+              <p>Clic molette + glisser : déplacez la carte sur les axes X et Y.</p>
+            </li>
+            <li class="hero-guide__item">
+              <span class="hero-guide__icon" aria-hidden="true">↕</span>
+              <p>Molette : zoomez ou dézoomez autour du pointeur.</p>
+            </li>
+          </ul>
+        </section>
       </header>
 
       <section class="map-shell" aria-label="Carte des biomes">
@@ -115,12 +138,39 @@
         const modalDetailImage = document.querySelector('[data-role="modal-detail-image"]');
         const modalDetailLabel = document.querySelector('[data-role="modal-detail-label"]');
         const modalSwapButton = document.querySelector('[data-action="swap-modal-images"]');
+        const themeToggle = document.querySelector('[data-action="toggle-theme"]');
+        const themeLabel = document.querySelector('[data-role="theme-label"]');
+        const themeIcon = document.querySelector('[data-role="theme-icon"]');
 
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
 
         let focusedBeforeModal = null;
         let mobileInfoCollapsed = true;
+        const THEME_STORAGE_KEY = 'monde-001-theme';
+
+        const applyTheme = (theme) => {
+          const isDark = theme === 'dark';
+          document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+          if (themeLabel) {
+            themeLabel.textContent = isDark ? 'Mode clair' : 'Mode sombre';
+          }
+          if (themeIcon) {
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+          }
+          themeToggle?.setAttribute('aria-pressed', String(isDark));
+          themeToggle?.setAttribute('aria-label', isDark ? 'Activer le mode clair' : 'Activer le mode sombre');
+        };
+
+        const getStoredTheme = () => localStorage.getItem(THEME_STORAGE_KEY);
+
+        const getInitialTheme = () => {
+          const stored = getStoredTheme();
+          if (stored === 'dark' || stored === 'light') {
+            return stored;
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
 
         /** @typedef {"drawing" | "generated"} ModalImageMode */
 
@@ -693,6 +743,20 @@
           syncHeroDisclosure();
         });
 
+        themeToggle?.addEventListener('click', () => {
+          const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          localStorage.setItem(THEME_STORAGE_KEY, next);
+          applyTheme(next);
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+          if (getStoredTheme()) {
+            return;
+          }
+          applyTheme(event.matches ? 'dark' : 'light');
+        });
+
         viewport.addEventListener(
           'mousedown',
           (event) => {
@@ -840,6 +904,7 @@
         });
 
         renderCards();
+        applyTheme(getInitialTheme());
         centerToFit();
         syncHeroDisclosure();
       })();
