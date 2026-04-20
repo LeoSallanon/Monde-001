@@ -461,7 +461,7 @@ body {
   max-width: 100%;
   height: auto;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   max-height: min(74vh, 760px);
 }
 
