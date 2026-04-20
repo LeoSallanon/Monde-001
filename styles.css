@@ -182,13 +182,13 @@ body {
 
 .map-connector__path {
   fill: none;
-  stroke: rgba(30, 34, 36, 0.44);
-  stroke-width: 1.2;
+  stroke: rgba(24, 28, 30, 0.52);
+  stroke-width: 1.05;
   stroke-linecap: round;
 }
 
 .map-connector__dot {
-  fill: rgba(30, 34, 36, 0.7);
+  fill: rgba(24, 28, 30, 0.76);
 }
 
 .board-card {
@@ -225,8 +225,17 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 0.2rem;
   background: linear-gradient(180deg, rgba(231, 229, 224, 0.6), rgba(236, 235, 231, 0.4));
+}
+
+.board-card[data-thumb-variant="wide"] {
+  border-radius: 14px;
+}
+
+.board-card[data-thumb-variant="tall"] {
+  border-radius: 16px;
 }
 
 .artwork-modal {
@@ -290,8 +299,25 @@ body {
 
 .artwork-modal__media img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: contain;
+  max-height: min(74vh, 760px);
+}
+
+.artwork-modal__panel[data-modal-variant="portrait"],
+.artwork-modal__panel[data-modal-variant="tall"] {
+  grid-template-columns: minmax(320px, 1.05fr) minmax(260px, 0.95fr);
+}
+
+.artwork-modal__panel[data-modal-variant="landscape"],
+.artwork-modal__panel[data-modal-variant="wide"] {
+  grid-template-columns: 1fr;
+}
+
+.artwork-modal__panel[data-modal-variant="landscape"] .artwork-modal__media,
+.artwork-modal__panel[data-modal-variant="wide"] .artwork-modal__media {
+  min-height: min(56vh, 520px);
 }
 
 .artwork-modal__meta {
