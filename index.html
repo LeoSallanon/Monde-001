@@ -15,11 +15,16 @@
   <body>
     <main class="page">
       <header class="hero">
-        <h1>cartographie Monde-001</h1>
-        <p>
-          Chaque image constitue une fenêtre sur un lieu remarquable d’un univers,
-          un point de vue vers ce monde scindé en différents biomes. Les Dessins
-          issues des images sont tracés par une machine en utilisant un stylo plume.
+        <div class="hero__topline">
+          <h1>cartographie Monde-001</h1>
+          <button type="button" class="hero__toggle" data-action="toggle-hero-info" aria-expanded="true">
+            Infos
+          </button>
+        </div>
+        <p class="hero__description" data-role="hero-description">
+          Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
+          scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
+          plume.
         </p>
       </header>
 
@@ -78,13 +83,13 @@
         const MAX_SCALE = 3;
         const ZOOM_STEP = 1.12;
         const HD_ZOOM_THRESHOLD = 1.65;
-        const CARD_COLLISION_PADDING = 20;
-        const MAX_COLLISION_ITERATIONS = 80;
 
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
         const boardContent = document.querySelector('[data-role="board-content"]');
         const overlays = document.querySelector('[data-role="map-overlays"]');
+        const heroDescription = document.querySelector('[data-role="hero-description"]');
+        const heroToggle = document.querySelector('[data-action="toggle-hero-info"]');
         const modal = document.querySelector('[data-role="artwork-modal"]');
         const modalTitle = document.querySelector('[data-role="modal-title"]');
         const modalImage = document.querySelector('[data-role="modal-image"]');
@@ -96,241 +101,242 @@
         const resetView = document.querySelector('[data-action="reset-view"]');
 
         let focusedBeforeModal = null;
+        let mobileInfoCollapsed = true;
 
         const cards = [
           {
             id: 'perchoir',
+            title: 'Vestige lacustre I',
             previewSrc: 'Images/Perchoir.png',
             fullSrc: 'Images/Perchoir.png',
-            title: 'Vestige lacustre I',
             primaryBiome: 'interieurs',
             secondaryBiomes: ['ruines', 'bois'],
             tags: ['intérieurs', 'ruines', 'bois'],
             dimensions: 'Dimensions : 92 × 61 cm',
             excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ultrices ligula nec justo volutpat tincidunt.',
-            x: null,
-            y: null,
+            anchorX: 250,
+            anchorY: 520,
+            cardX: 210,
+            cardY: 520,
             width: 106,
             height: 156,
             zIndex: 4,
-            offsetX: 18,
-            offsetY: -10,
           },
           {
             id: 'pilier',
+            title: 'Relique des falaises',
             previewSrc: 'Images/Pilier.png',
             fullSrc: 'Images/Pilier.png',
-            title: 'Relique des falaises',
             primaryBiome: 'falaises',
             secondaryBiomes: ['marecages', 'lacs-etangs'],
             tags: ['falaises', 'marécages', 'lacs'],
             dimensions: 'Dimensions : 110 × 74 cm',
             excerpt: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pellentesque habitant morbi tristique senectus.',
-            x: null,
-            y: null,
+            anchorX: 900,
+            anchorY: 315,
+            cardX: 858,
+            cardY: 222,
             width: 108,
             height: 162,
             zIndex: 5,
-            offsetX: -22,
-            offsetY: 14,
           },
           {
             id: 'colonne',
+            title: 'Colonne des lisières',
             previewSrc: 'Images/Colonne.png',
             fullSrc: 'Images/Colonne.png',
-            title: 'Colonne des lisières',
             primaryBiome: 'ruines',
             secondaryBiomes: ['bois', 'sous-bois'],
             tags: ['ruines', 'bois', 'sous-bois'],
             dimensions: 'Dimensions : 71 × 48 cm',
             excerpt: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-            x: null,
-            y: null,
+            anchorX: 295,
+            anchorY: 355,
+            cardX: 245,
+            cardY: 300,
             width: 104,
             height: 150,
             zIndex: 6,
-            offsetX: -8,
-            offsetY: 8,
           },
           {
             id: 'coeur',
+            title: 'Cœur des étangs',
             previewSrc: 'Images/Coeur.png',
             fullSrc: 'Images/Coeur.png',
-            title: 'Cœur des étangs',
             primaryBiome: 'lacs-etangs',
             secondaryBiomes: ['marecages', 'sous-bois'],
             tags: ['lacs', 'marécages', 'sous-bois'],
             dimensions: 'Dimensions : 88 × 57 cm',
             excerpt: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-            x: null,
-            y: null,
+            anchorX: 530,
+            anchorY: 305,
+            cardX: 452,
+            cardY: 212,
             width: 102,
             height: 154,
-            zIndex: 6,
-            offsetX: -14,
-            offsetY: 22,
+            zIndex: 7,
           },
           {
             id: 'rocs',
+            title: 'Rocs suspendus',
             previewSrc: 'Images/Rocs.png',
             fullSrc: 'Images/Rocs.png',
-            title: 'Rocs suspendus',
             primaryBiome: 'falaises',
             secondaryBiomes: ['rivieres', 'bois'],
             tags: ['falaises', 'rivières', 'bois'],
             dimensions: 'Dimensions : 97 × 64 cm',
             excerpt: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            x: null,
-            y: null,
+            anchorX: 870,
+            anchorY: 392,
+            cardX: 780,
+            cardY: 355,
             width: 108,
             height: 152,
-            zIndex: 5,
-            offsetX: 6,
-            offsetY: 24,
+            zIndex: 6,
           },
           {
             id: 'voute',
+            title: 'Voûte des ruines',
             previewSrc: 'Images/Voute.png',
             fullSrc: 'Images/Voute.png',
-            title: 'Voûte des ruines',
             primaryBiome: 'ruines',
             secondaryBiomes: ['lacs-etangs', 'bois'],
             tags: ['ruines', 'lacs', 'bois'],
             dimensions: 'Dimensions : 92 × 61 cm',
             excerpt: 'Fusce at magna vitae est cursus dignissim. Curabitur laoreet dui nec sem tristique, sed dapibus leo sollicitudin.',
-            x: null,
-            y: null,
+            anchorX: 352,
+            anchorY: 392,
+            cardX: 340,
+            cardY: 418,
             width: 108,
             height: 152,
             zIndex: 6,
-            offsetX: 26,
-            offsetY: -22,
           },
           {
             id: 'recif',
+            title: 'Forme marécageuse',
             previewSrc: 'Images/Recif.png',
             fullSrc: 'Images/Recif.png',
-            title: 'Forme marécageuse',
             primaryBiome: 'ruines',
             secondaryBiomes: ['lacs-etangs', 'marecages'],
             tags: ['ruines', 'lacs', 'marécages'],
             dimensions: 'Dimensions : 84 × 55 cm',
             excerpt: 'Integer nec odio praesent libero sed cursus ante dapibus diam. Sed nisi nulla quis sem at nibh elementum.',
-            x: null,
-            y: null,
+            anchorX: 410,
+            anchorY: 374,
+            cardX: 436,
+            cardY: 438,
             width: 104,
             height: 150,
             zIndex: 7,
-            offsetX: 24,
-            offsetY: 14,
           },
           {
             id: 'oeuf',
+            title: 'Œuf de la canopée',
             previewSrc: 'Images/Oeuf.png',
             fullSrc: 'Images/Oeuf.png',
-            title: 'Œuf de la canopée',
             primaryBiome: 'bois',
             secondaryBiomes: ['ruines', 'sous-bois'],
             tags: ['bois', 'ruines', 'sous-bois'],
             dimensions: 'Dimensions : 89 × 59 cm',
             excerpt: 'Nam nec ante sed lacinia urna non tincidunt mattis tortor. Morbi lectus risus iaculis vel suscipit quis luctus.',
-            x: null,
-            y: null,
+            anchorX: 305,
+            anchorY: 225,
+            cardX: 200,
+            cardY: 154,
             width: 104,
             height: 150,
             zIndex: 7,
-            offsetX: -24,
-            offsetY: -16,
           },
           {
             id: 'falaise',
+            title: 'Faille humide',
             previewSrc: 'Images/Falaise.png',
             fullSrc: 'Images/Falaise.png',
-            title: 'Faille humide',
             primaryBiome: 'marecages',
             secondaryBiomes: ['falaises', 'rivieres'],
             tags: ['marécages', 'falaises', 'rivières'],
             dimensions: 'Dimensions : 95 × 63 cm',
             excerpt: 'Praesent mauris fusce nec tellus sed augue semper porta. Mauris massa vestibulum lacinia arcu eget nulla.',
-            x: null,
-            y: null,
+            anchorX: 640,
+            anchorY: 378,
+            cardX: 650,
+            cardY: 438,
             width: 102,
             height: 154,
             zIndex: 5,
-            offsetX: -16,
-            offsetY: 30,
           },
           {
             id: 'cave',
+            title: 'Cavité des brumes',
             previewSrc: 'Images/Cave.png',
             fullSrc: 'Images/Cave.png',
-            title: 'Cavité des brumes',
             primaryBiome: 'marecages',
             secondaryBiomes: ['lacs-etangs', 'bois'],
             tags: ['marécages', 'lacs', 'bois'],
             dimensions: 'Dimensions : 102 × 66 cm',
             excerpt: 'Class aptent taciti sociosqu ad litora torquent per conubia nostra per inceptos himenaeos. Curabitur sodales ligula.',
-            x: null,
-            y: null,
+            anchorX: 570,
+            anchorY: 362,
+            cardX: 560,
+            cardY: 446,
             width: 112,
             height: 144,
             zIndex: 6,
-            offsetX: -6,
-            offsetY: 26,
           },
           {
             id: 'citrouille',
+            title: 'Relique du sous-bois',
             previewSrc: 'Images/Citrouille.png',
             fullSrc: 'Images/Citrouille.png',
-            title: 'Relique du sous-bois',
             primaryBiome: 'sous-bois',
             secondaryBiomes: ['interieurs', 'lacs-etangs'],
             tags: ['sous-bois', 'intérieurs', 'lacs'],
             dimensions: 'Dimensions : 78 × 52 cm',
             excerpt: 'Suspendisse potenti in eleifend quam a odio in hac habitasse platea dictumst. Quisque volutpat condimentum velit.',
-            x: null,
-            y: null,
+            anchorX: 470,
+            anchorY: 98,
+            cardX: 374,
+            cardY: 38,
             width: 116,
             height: 126,
             zIndex: 6,
-            offsetX: 20,
-            offsetY: 14,
           },
           {
             id: 'source',
+            title: 'Source liminale',
             previewSrc: 'Images/Source.png',
             fullSrc: 'Images/Source.png',
-            title: 'Source liminale',
             primaryBiome: 'marecages',
             secondaryBiomes: ['bois', 'lacs-etangs'],
             tags: ['marécages', 'bois', 'lacs'],
             dimensions: 'Dimensions : 96 × 62 cm',
             excerpt: 'Aliquam lorem ante dapibus in viverra quis feugiat a tellus. Phasellus viverra nulla ut metus varius laoreet.',
-            x: null,
-            y: null,
+            anchorX: 515,
+            anchorY: 355,
+            cardX: 484,
+            cardY: 425,
             width: 106,
             height: 150,
             zIndex: 7,
-            offsetX: 34,
-            offsetY: -20,
           },
           {
             id: 'oeuf-colonnes',
+            title: 'Nid des colonnes',
             previewSrc: 'Images/Oeuf.png',
             fullSrc: 'Images/Oeuf.png',
-            title: 'Nid des colonnes',
             primaryBiome: 'lacs-etangs',
             secondaryBiomes: ['ruines', 'bois'],
             tags: ['lacs', 'ruines', 'bois'],
             dimensions: 'Dimensions : 90 × 58 cm',
             excerpt: 'Aenean leo ligula porttitor eu consequat vitae eleifend ac enim. Donec quam felis ultricies nec pellentesque eu pretium.',
-            x: null,
-            y: null,
+            anchorX: 462,
+            anchorY: 300,
+            cardX: 372,
+            cardY: 220,
             width: 104,
             height: 148,
             zIndex: 8,
-            offsetX: -30,
-            offsetY: 34,
           },
         ];
 
@@ -357,167 +363,102 @@
           syncImageResolution();
         };
 
-        const getBiomeGeometry = () => {
-          const geometry = {};
+        const getLabelSafeZones = () => {
           const boardBounds = boardContent.getBoundingClientRect();
-
-          boardContent.querySelectorAll('[data-biome]').forEach((tile) => {
-            const biome = tile.dataset.biome;
+          return [...boardContent.querySelectorAll('[data-biome]')].map((tile) => {
             const tileBounds = tile.getBoundingClientRect();
-            geometry[biome] = {
-              x: tileBounds.left - boardBounds.left + tileBounds.width / 2,
-              y: tileBounds.top - boardBounds.top + tileBounds.height / 2,
-              left: tileBounds.left - boardBounds.left,
-              top: tileBounds.top - boardBounds.top,
-              right: tileBounds.right - boardBounds.left,
-              bottom: tileBounds.bottom - boardBounds.top,
+            const padX = Math.min(42, tileBounds.width * 0.2);
+            const padY = Math.min(22, tileBounds.height * 0.22);
+            return {
+              left: tileBounds.left - boardBounds.left + padX,
+              right: tileBounds.right - boardBounds.left - padX,
+              top: tileBounds.top - boardBounds.top + padY,
+              bottom: tileBounds.bottom - boardBounds.top - padY,
             };
           });
-
-          return geometry;
         };
 
-        const clampPointToRect = (point, rect) => ({
-          x: clamp(point.x, rect.left, rect.right),
-          y: clamp(point.y, rect.top, rect.bottom),
-        });
+        const intersects = (rect, zone) =>
+          !(rect.right < zone.left || rect.left > zone.right || rect.bottom < zone.top || rect.top > zone.bottom);
 
-        const closestPointsBetweenRects = (rectA, rectB) => {
-          const pointA = clampPointToRect({ x: rectB.x, y: rectB.y }, rectA);
-          const pointB = clampPointToRect({ x: rectA.x, y: rectA.y }, rectB);
-          return { pointA, pointB };
-        };
+        const preserveLabelReadability = (card, zones) => {
+          const maxX = Math.max(0, boardContent.clientWidth - card.width);
+          const maxY = Math.max(0, boardContent.clientHeight - card.height);
+          const adjusted = { ...card };
 
-        const getCardSeed = (id) => [...id].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+          for (let i = 0; i < zones.length; i += 1) {
+            const zone = zones[i];
+            const cardRect = {
+              left: adjusted.cardX,
+              top: adjusted.cardY,
+              right: adjusted.cardX + adjusted.width,
+              bottom: adjusted.cardY + adjusted.height,
+            };
 
-        const resolveCardPosition = (card, biomeGeometry, indexWithinBiome = 0) => {
-          const primary = biomeGeometry[card.primaryBiome];
-          if (!primary) {
-            return { x: 0, y: 0 };
-          }
-
-          const secondaryBiomes = card.secondaryBiomes
-            .map((biome) => biomeGeometry[biome])
-            .filter(Boolean);
-
-          let anchorX = primary.x;
-          let anchorY = primary.y;
-
-          if (secondaryBiomes.length === 1) {
-            const { pointA, pointB } = closestPointsBetweenRects(primary, secondaryBiomes[0]);
-            anchorX = pointA.x * 0.62 + pointB.x * 0.38;
-            anchorY = pointA.y * 0.62 + pointB.y * 0.38;
-          } else if (secondaryBiomes.length >= 2) {
-            const constellation = [primary, ...secondaryBiomes];
-            anchorX = constellation.reduce((acc, point) => acc + point.x, 0) / constellation.length;
-            anchorY = constellation.reduce((acc, point) => acc + point.y, 0) / constellation.length;
-          }
-
-          const seed = getCardSeed(card.id);
-          const ring = 14 + (seed % 18);
-          const angle = (seed % 360) * (Math.PI / 180) + indexWithinBiome * 0.72;
-
-          anchorX += Math.cos(angle) * ring;
-          anchorY += Math.sin(angle) * ring;
-
-          const rawX = anchorX - card.width / 2 + (card.offsetX ?? 0);
-          const rawY = anchorY - card.height / 2 + (card.offsetY ?? 0);
-
-          const maxX = boardContent.clientWidth - card.width;
-          const maxY = boardContent.clientHeight - card.height;
-
-          return {
-            x: clamp(rawX, 0, Math.max(0, maxX)),
-            y: clamp(rawY, 0, Math.max(0, maxY)),
-          };
-        };
-
-        const hasOverlap = (a, b, padding = CARD_COLLISION_PADDING) => {
-          const aLeft = a.x - padding;
-          const aTop = a.y - padding;
-          const aRight = a.x + a.width + padding;
-          const aBottom = a.y + a.height + padding;
-          const bLeft = b.x;
-          const bTop = b.y;
-          const bRight = b.x + b.width;
-          const bBottom = b.y + b.height;
-          return !(aRight < bLeft || bRight < aLeft || aBottom < bTop || bBottom < aTop);
-        };
-
-        const avoidCollisions = (items) => {
-          const maxX = boardContent.clientWidth;
-          const maxY = boardContent.clientHeight;
-
-          for (let iteration = 0; iteration < MAX_COLLISION_ITERATIONS; iteration += 1) {
-            let moved = false;
-
-            for (let i = 0; i < items.length; i += 1) {
-              for (let j = i + 1; j < items.length; j += 1) {
-                const a = items[i];
-                const b = items[j];
-
-                if (!hasOverlap(a, b)) {
-                  continue;
-                }
-
-                const centerAX = a.x + a.width / 2;
-                const centerAY = a.y + a.height / 2;
-                const centerBX = b.x + b.width / 2;
-                const centerBY = b.y + b.height / 2;
-
-                let dx = centerBX - centerAX;
-                let dy = centerBY - centerAY;
-                const distance = Math.hypot(dx, dy) || 1;
-
-                dx /= distance;
-                dy /= distance;
-
-                const push = 6;
-
-                a.x = clamp(a.x - dx * push, 0, Math.max(0, maxX - a.width));
-                a.y = clamp(a.y - dy * push, 0, Math.max(0, maxY - a.height));
-                b.x = clamp(b.x + dx * push, 0, Math.max(0, maxX - b.width));
-                b.y = clamp(b.y + dy * push, 0, Math.max(0, maxY - b.height));
-                moved = true;
-              }
+            if (!intersects(cardRect, zone)) {
+              continue;
             }
 
-            if (!moved) {
-              break;
-            }
+            const pushLeft = Math.abs(cardRect.right - zone.left);
+            const pushRight = Math.abs(zone.right - cardRect.left);
+            const pushUp = Math.abs(cardRect.bottom - zone.top);
+            const pushDown = Math.abs(zone.bottom - cardRect.top);
+            const minPush = Math.min(pushLeft, pushRight, pushUp, pushDown);
+
+            if (minPush === pushLeft) adjusted.cardX -= pushLeft + 8;
+            if (minPush === pushRight) adjusted.cardX += pushRight + 8;
+            if (minPush === pushUp) adjusted.cardY -= pushUp + 8;
+            if (minPush === pushDown) adjusted.cardY += pushDown + 8;
+
+            adjusted.cardX = clamp(adjusted.cardX, 0, maxX);
+            adjusted.cardY = clamp(adjusted.cardY, 0, maxY);
           }
 
-          return items;
+          return adjusted;
         };
 
         const renderCards = () => {
-          const biomeGeometry = getBiomeGeometry();
-          const byPrimaryBiome = {};
-
+          const labelZones = getLabelSafeZones();
           const resolvedCards = cards.map((card) => {
-            const currentIndex = byPrimaryBiome[card.primaryBiome] ?? 0;
-            byPrimaryBiome[card.primaryBiome] = currentIndex + 1;
-
-            const position =
-              Number.isFinite(card.x) && Number.isFinite(card.y)
-                ? { x: card.x, y: card.y }
-                : resolveCardPosition(card, biomeGeometry, currentIndex);
-
+            const safe = preserveLabelReadability(card, labelZones);
             return {
               ...card,
-              x: Math.round(position.x),
-              y: Math.round(position.y),
+              anchorX: Math.round(safe.anchorX),
+              anchorY: Math.round(safe.anchorY),
+              cardX: Math.round(safe.cardX),
+              cardY: Math.round(safe.cardY),
             };
           });
 
-          avoidCollisions(resolvedCards);
           overlays.innerHTML = '';
+          const connectors = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          connectors.classList.add('map-connectors');
+          connectors.setAttribute('viewBox', `0 0 ${boardContent.clientWidth} ${boardContent.clientHeight}`);
+          connectors.setAttribute('preserveAspectRatio', 'none');
+          overlays.appendChild(connectors);
 
           resolvedCards.forEach((card) => {
+            const cardCenterX = card.cardX + card.width / 2;
+            const cardCenterY = card.cardY + card.height / 2;
+            const controlX = (card.anchorX + cardCenterX) / 2;
+            const controlY = (card.anchorY + cardCenterY) / 2 - 14;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M ${card.anchorX} ${card.anchorY} Q ${controlX} ${controlY} ${cardCenterX} ${cardCenterY}`);
+            path.setAttribute('class', 'map-connector__path');
+            connectors.appendChild(path);
+
+            const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            point.setAttribute('cx', `${card.anchorX}`);
+            point.setAttribute('cy', `${card.anchorY}`);
+            point.setAttribute('r', '2.6');
+            point.setAttribute('class', 'map-connector__dot');
+            connectors.appendChild(point);
+
             const figure = document.createElement('figure');
             figure.className = 'board-card';
-            figure.style.left = `${Math.round(card.x)}px`;
-            figure.style.top = `${Math.round(card.y)}px`;
+            figure.style.left = `${card.cardX}px`;
+            figure.style.top = `${card.cardY}px`;
             figure.style.width = `${card.width}px`;
             figure.style.height = `${card.height}px`;
             figure.style.zIndex = String(card.zIndex ?? 1);
@@ -634,6 +575,13 @@
           }
         };
 
+        const syncHeroDisclosure = () => {
+          const mobile = window.matchMedia('(max-width: 960px)').matches;
+          const expanded = mobile ? !mobileInfoCollapsed : true;
+          heroToggle.setAttribute('aria-expanded', String(expanded));
+          heroDescription.hidden = !expanded;
+        };
+
         viewport.addEventListener(
           'wheel',
           (event) => {
@@ -644,6 +592,11 @@
           },
           { passive: false }
         );
+
+        heroToggle.addEventListener('click', () => {
+          mobileInfoCollapsed = !mobileInfoCollapsed;
+          syncHeroDisclosure();
+        });
 
         viewport.addEventListener(
           'mousedown',
@@ -670,6 +623,38 @@
           },
           true
         );
+
+        viewport.addEventListener(
+          'touchstart',
+          (event) => {
+            if (event.touches.length !== 1) {
+              return;
+            }
+            const touch = event.touches[0];
+            view.dragging = true;
+            view.dragX = touch.clientX - view.x;
+            view.dragY = touch.clientY - view.y;
+          },
+          { passive: true }
+        );
+
+        viewport.addEventListener(
+          'touchmove',
+          (event) => {
+            if (!view.dragging || event.touches.length !== 1) {
+              return;
+            }
+            const touch = event.touches[0];
+            view.x = touch.clientX - view.dragX;
+            view.y = touch.clientY - view.dragY;
+            applyTransform();
+          },
+          { passive: true }
+        );
+
+        viewport.addEventListener('touchend', () => {
+          view.dragging = false;
+        });
 
         overlays.addEventListener('click', (event) => {
           const cardElement = event.target.closest('.board-card');
@@ -753,10 +738,12 @@
         window.addEventListener('resize', () => {
           renderCards();
           centerToFit();
+          syncHeroDisclosure();
         });
 
         renderCards();
         centerToFit();
+        syncHeroDisclosure();
       })();
     </script>
   </body>
