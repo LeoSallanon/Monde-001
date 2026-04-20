@@ -18,10 +18,6 @@
         <div class="hero__topline">
           <h1>cartographie Monde-001</h1>
           <div class="hero__actions">
-            <button type="button" class="theme-toggle" data-action="toggle-theme" aria-pressed="false">
-              <span class="theme-toggle__icon" data-role="theme-icon" aria-hidden="true">🌙</span>
-              <span data-role="theme-label">Mode sombre</span>
-            </button>
             <button type="button" class="hero__toggle" data-action="toggle-hero-info" aria-expanded="true">
               Infos
             </button>
@@ -32,23 +28,69 @@
           scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
           plume.
         </p>
-        <section class="hero-guide" aria-label="Aide de navigation">
-          <h2 class="hero-guide__title">Navigation de la carte</h2>
+        <section class="hero-guide" aria-label="Repères de navigation">
+          <h2 class="hero-guide__title">Repères</h2>
           <ul class="hero-guide__list">
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">L</span>
-              <p>Clic gauche : interagissez avec une image pour ouvrir son détail.</p>
+              <span class="hero-guide__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <rect x="5.2" y="3.8" width="13.6" height="16.4" rx="3.8"></rect>
+                  <path d="M12 7.2v9.6"></path>
+                  <path d="M12 11.2l3.2-2.3"></path>
+                </svg>
+              </span>
+              <p>Cliquer une image pour ouvrir son détail.</p>
             </li>
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">M</span>
-              <p>Clic molette + glisser : déplacez la carte sur les axes X et Y.</p>
+              <span class="hero-guide__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <rect x="5.2" y="3.8" width="13.6" height="16.4" rx="3.8"></rect>
+                  <circle cx="12" cy="10.1" r="1.4"></circle>
+                  <path d="M12 13.7v5.1"></path>
+                  <path d="M9.8 16.6 12 18.9l2.2-2.3"></path>
+                  <path d="M6.8 14.8h10.4"></path>
+                  <path d="M6.8 14.8 9 12.6"></path>
+                  <path d="M6.8 14.8 9 17"></path>
+                  <path d="M17.2 14.8 15 12.6"></path>
+                  <path d="M17.2 14.8 15 17"></path>
+                </svg>
+              </span>
+              <p>Glisser avec la molette pour parcourir la carte.</p>
             </li>
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">↕</span>
-              <p>Molette : zoomez ou dézoomez autour du pointeur.</p>
+              <span class="hero-guide__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <circle cx="10.1" cy="11.4" r="4.1"></circle>
+                  <path d="M13.2 14.6 17.6 19"></path>
+                  <path d="M18.4 6.2v6.2"></path>
+                  <path d="M15.3 9.3h6.2"></path>
+                </svg>
+              </span>
+              <p>Utiliser la molette pour zoomer autour du pointeur.</p>
             </li>
           </ul>
         </section>
+        <div class="hero__footer">
+          <button
+            type="button"
+            class="theme-toggle"
+            data-action="toggle-theme"
+            data-theme-mode="light"
+            aria-pressed="false"
+            aria-label="Activer le mode sombre"
+          >
+            <span class="theme-toggle__icon" aria-hidden="true">
+              <svg class="theme-toggle__glyph theme-toggle__glyph--moon" viewBox="0 0 24 24" focusable="false">
+                <path d="M14.7 3.6a8.8 8.8 0 1 0 5.7 15.2 8 8 0 1 1-5.7-15.2z"></path>
+              </svg>
+              <svg class="theme-toggle__glyph theme-toggle__glyph--sun" viewBox="0 0 24 24" focusable="false">
+                <circle cx="12" cy="12" r="3.9"></circle>
+                <path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6.4 6.4l1.7 1.7M15.9 15.9l1.7 1.7M17.6 6.4l-1.7 1.7M8.1 15.9l-1.7 1.7"></path>
+              </svg>
+            </span>
+            <span data-role="theme-label">Mode sombre</span>
+          </button>
+        </div>
       </header>
 
       <section class="map-shell" aria-label="Carte des biomes">
@@ -140,7 +182,6 @@
         const modalSwapButton = document.querySelector('[data-action="swap-modal-images"]');
         const themeToggle = document.querySelector('[data-action="toggle-theme"]');
         const themeLabel = document.querySelector('[data-role="theme-label"]');
-        const themeIcon = document.querySelector('[data-role="theme-icon"]');
 
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
@@ -155,9 +196,7 @@
           if (themeLabel) {
             themeLabel.textContent = isDark ? 'Mode clair' : 'Mode sombre';
           }
-          if (themeIcon) {
-            themeIcon.textContent = isDark ? '☀️' : '🌙';
-          }
+          themeToggle?.setAttribute('data-theme-mode', isDark ? 'dark' : 'light');
           themeToggle?.setAttribute('aria-pressed', String(isDark));
           themeToggle?.setAttribute('aria-label', isDark ? 'Activer le mode clair' : 'Activer le mode sombre');
         };
@@ -304,6 +343,13 @@
         };
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const getLayoutMode = () => (window.matchMedia('(max-width: 960px)').matches ? 'mobile' : 'desktop');
+        let currentLayoutMode = getLayoutMode();
+        const persistentLayout = {
+          width: 0,
+          height: 0,
+          cards: new Map(),
+        };
         /** @type {ModalImageMode} */
         let modalImageMode = 'drawing';
         let currentModalArtwork = null;
@@ -454,15 +500,46 @@
           return cards;
         };
 
-        const renderCards = () => {
+        const renderCards = ({ preserveLayout = false } = {}) => {
           const resolvedCards = ARTWORK_LAYOUTS.map((layout) => normalizeCard(layout));
-          const biomeData = getBiomeData();
-          resolvedCards.forEach((card) => {
-            const anchor = anchorForCard(card, biomeData.byKey);
-            card.anchorX = clamp(anchor.x, 0, boardContent.clientWidth);
-            card.anchorY = clamp(anchor.y, 0, boardContent.clientHeight);
-          });
-          layoutCards(resolvedCards, biomeData.textHitboxes);
+          const boardWidth = boardContent.clientWidth;
+          const boardHeight = boardContent.clientHeight;
+          const canReuse =
+            preserveLayout &&
+            persistentLayout.width > 0 &&
+            persistentLayout.height > 0 &&
+            persistentLayout.cards.size === resolvedCards.length;
+
+          if (canReuse) {
+            const widthRatio = boardWidth / persistentLayout.width;
+            const heightRatio = boardHeight / persistentLayout.height;
+            resolvedCards.forEach((card) => {
+              const saved = persistentLayout.cards.get(card.id);
+              if (!saved) {
+                return;
+              }
+              card.cardX = saved.cardX * widthRatio;
+              card.cardY = saved.cardY * heightRatio;
+              card.cardW = saved.cardW * widthRatio;
+              card.cardH = saved.cardH * heightRatio;
+            });
+          } else {
+            const biomeData = getBiomeData();
+            resolvedCards.forEach((card) => {
+              const anchor = anchorForCard(card, biomeData.byKey);
+              card.anchorX = clamp(anchor.x, 0, boardContent.clientWidth);
+              card.anchorY = clamp(anchor.y, 0, boardContent.clientHeight);
+            });
+            layoutCards(resolvedCards, biomeData.textHitboxes);
+            persistentLayout.width = boardWidth;
+            persistentLayout.height = boardHeight;
+            persistentLayout.cards = new Map(
+              resolvedCards.map((card) => [
+                card.id,
+                { cardX: card.cardX, cardY: card.cardY, cardW: card.cardW, cardH: card.cardH },
+              ])
+            );
+          }
 
           overlays.innerHTML = '';
 
@@ -814,12 +891,15 @@
         });
 
         window.addEventListener('resize', () => {
-          renderCards();
+          const nextLayoutMode = getLayoutMode();
+          const preserveLayout = nextLayoutMode === currentLayoutMode;
+          renderCards({ preserveLayout });
+          currentLayoutMode = nextLayoutMode;
           centerToFit();
           syncHeroDisclosure();
         });
 
-        renderCards();
+        renderCards({ preserveLayout: false });
         applyTheme(getInitialTheme());
         centerToFit();
         syncHeroDisclosure();
