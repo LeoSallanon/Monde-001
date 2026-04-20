@@ -447,13 +447,10 @@ body {
 
 .artwork-modal__media {
   margin: 0;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--card-border) 65%, transparent);
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
   background: transparent;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
 }
 
 .artwork-modal__media img {
@@ -463,6 +460,8 @@ body {
   display: block;
   object-fit: cover;
   max-height: min(74vh, 760px);
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--card-border) 65%, transparent);
 }
 
 .artwork-modal__panel[data-modal-variant="portrait"],
