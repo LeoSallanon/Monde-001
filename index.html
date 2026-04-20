@@ -341,6 +341,13 @@
           dragX: 0,
           dragY: 0,
         };
+        const touchGesture = {
+          mode: null,
+          startScale: 1,
+          startDistance: 0,
+          worldX: 0,
+          worldY: 0,
+        };
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
         /** @type {ModalImageMode} */
@@ -619,6 +626,9 @@
           applyTransform();
         };
 
+        const touchDistance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+        const touchMidpoint = (a, b) => ({ clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 });
+
         const zoomFromCenter = (direction) => {
           const rect = viewport.getBoundingClientRect();
           const next = direction > 0 ? view.scale * ZOOM_STEP : view.scale / ZOOM_STEP;
@@ -777,33 +787,91 @@
         viewport.addEventListener(
           'touchstart',
           (event) => {
-            if (event.touches.length !== 1) {
+            if (event.touches.length === 2) {
+              event.preventDefault();
+              const [first, second] = event.touches;
+              const midpoint = touchMidpoint(first, second);
+              touchGesture.mode = 'pinch';
+              touchGesture.startScale = view.scale;
+              touchGesture.startDistance = Math.max(1, touchDistance(first, second));
+              touchGesture.worldX = (midpoint.clientX - view.x) / view.scale;
+              touchGesture.worldY = (midpoint.clientY - view.y) / view.scale;
+              view.dragging = false;
+              viewport.classList.add('is-dragging');
               return;
             }
-            const touch = event.touches[0];
-            view.dragging = true;
-            view.dragX = touch.clientX - view.x;
-            view.dragY = touch.clientY - view.y;
+
+            if (event.touches.length === 1) {
+              const touch = event.touches[0];
+              touchGesture.mode = 'pan';
+              view.dragging = true;
+              view.dragX = touch.clientX - view.x;
+              view.dragY = touch.clientY - view.y;
+              viewport.classList.add('is-dragging');
+            }
           },
-          { passive: true }
+          { passive: false }
         );
 
         viewport.addEventListener(
           'touchmove',
           (event) => {
-            if (!view.dragging || event.touches.length !== 1) {
+            if (touchGesture.mode === 'pinch' && event.touches.length >= 2) {
+              event.preventDefault();
+              const [first, second] = event.touches;
+              const midpoint = touchMidpoint(first, second);
+              const nextDistance = Math.max(1, touchDistance(first, second));
+              const nextScale = clamp((nextDistance / touchGesture.startDistance) * touchGesture.startScale, MIN_SCALE, MAX_SCALE);
+
+              view.scale = nextScale;
+              view.x = midpoint.clientX - touchGesture.worldX * view.scale;
+              view.y = midpoint.clientY - touchGesture.worldY * view.scale;
+              applyTransform();
               return;
             }
+
+            if (!(view.dragging && touchGesture.mode === 'pan' && event.touches.length === 1)) {
+              return;
+            }
+            event.preventDefault();
             const touch = event.touches[0];
             view.x = touch.clientX - view.dragX;
             view.y = touch.clientY - view.dragY;
             applyTransform();
           },
-          { passive: true }
+          { passive: false }
         );
 
-        viewport.addEventListener('touchend', () => {
+        viewport.addEventListener('touchend', (event) => {
+          if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            touchGesture.mode = 'pan';
+            view.dragging = true;
+            view.dragX = touch.clientX - view.x;
+            view.dragY = touch.clientY - view.y;
+            return;
+          }
+
+          if (event.touches.length >= 2) {
+            const [first, second] = event.touches;
+            const midpoint = touchMidpoint(first, second);
+            touchGesture.mode = 'pinch';
+            touchGesture.startScale = view.scale;
+            touchGesture.startDistance = Math.max(1, touchDistance(first, second));
+            touchGesture.worldX = (midpoint.clientX - view.x) / view.scale;
+            touchGesture.worldY = (midpoint.clientY - view.y) / view.scale;
+            return;
+          }
+
+          touchGesture.mode = null;
           view.dragging = false;
+          viewport.classList.remove('is-dragging');
+        });
+
+        viewport.addEventListener('touchcancel', () => {
+          touchGesture.mode = null;
+          view.dragging = false;
+          viewport.classList.remove('is-dragging');
         });
 
         overlays.addEventListener('click', (event) => {

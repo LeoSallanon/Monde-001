@@ -319,6 +319,8 @@ body {
   border: 1px solid var(--viewport-border);
   background: var(--viewport-bg);
   cursor: grab;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .map-viewport:focus-visible {
