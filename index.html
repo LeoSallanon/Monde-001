@@ -23,12 +23,13 @@
             </button>
           </div>
         </div>
-        <p class="hero__description" data-role="hero-description">
-          Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
-          scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
-          plume.
-        </p>
-        <section class="hero-guide" aria-label="Navigation de la carte">
+        <div data-role="hero-extra">
+          <p class="hero__description" data-role="hero-description">
+            Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
+            scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
+            plume.
+          </p>
+          <section class="hero-guide" aria-label="Navigation de la carte">
           <h2 class="hero-guide__title">Navigation</h2>
           <ul class="hero-guide__list">
             <li class="hero-guide__item">
@@ -66,27 +67,28 @@
               <p>Utiliser la molette pour zoomer autour du pointeur.</p>
             </li>
           </ul>
-        </section>
-        <div class="hero__footer">
-          <button
-            type="button"
-            class="theme-toggle"
-            data-action="toggle-theme"
-            data-theme-mode="light"
-            aria-pressed="false"
-            aria-label="Activer le mode sombre"
-          >
-            <span class="theme-toggle__icon" aria-hidden="true">
-              <svg class="theme-toggle__glyph theme-toggle__glyph--moon" viewBox="0 0 24 24" focusable="false">
-                <path d="M14.7 3.6a8.8 8.8 0 1 0 5.7 15.2 8 8 0 1 1-5.7-15.2z"></path>
-              </svg>
-              <svg class="theme-toggle__glyph theme-toggle__glyph--sun" viewBox="0 0 24 24" focusable="false">
-                <circle cx="12" cy="12" r="3.9"></circle>
-                <path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6.4 6.4l1.7 1.7M15.9 15.9l1.7 1.7M17.6 6.4l-1.7 1.7M8.1 15.9l-1.7 1.7"></path>
-              </svg>
-            </span>
-            <span data-role="theme-label">Mode sombre</span>
-          </button>
+          </section>
+          <div class="hero__footer">
+            <button
+              type="button"
+              class="theme-toggle"
+              data-action="toggle-theme"
+              data-theme-mode="light"
+              aria-pressed="false"
+              aria-label="Activer le mode sombre"
+            >
+              <span class="theme-toggle__icon" aria-hidden="true">
+                <svg class="theme-toggle__glyph theme-toggle__glyph--moon" viewBox="0 0 24 24" focusable="false">
+                  <path d="M14.7 3.6a8.8 8.8 0 1 0 5.7 15.2 8 8 0 1 1-5.7-15.2z"></path>
+                </svg>
+                <svg class="theme-toggle__glyph theme-toggle__glyph--sun" viewBox="0 0 24 24" focusable="false">
+                  <circle cx="12" cy="12" r="3.9"></circle>
+                  <path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6.4 6.4l1.7 1.7M15.9 15.9l1.7 1.7M17.6 6.4l-1.7 1.7M8.1 15.9l-1.7 1.7"></path>
+                </svg>
+              </span>
+              <span data-role="theme-label">Mode sombre</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -165,6 +167,7 @@
         const boardContent = document.querySelector('[data-role="board-content"]');
         const overlays = document.querySelector('[data-role="map-overlays"]');
         const heroDescription = document.querySelector('[data-role="hero-description"]');
+        const heroExtra = document.querySelector('[data-role="hero-extra"]');
         const heroToggle = document.querySelector('[data-action="toggle-hero-info"]');
         const modal = document.querySelector('[data-role="artwork-modal"]');
         const modalTitle = document.querySelector('[data-role="modal-title"]');
@@ -216,7 +219,7 @@
             title: 'Baignoire suspendue',
             generatedSrc: 'Images/Generated/Baignoire suspendue.png',
             drawingSrc: 'Images/Dessins/Baignoire suspendue_resultat.jpg',
-            tags: ['bois', 'sous-bois'],
+            tags: ['sous-bois', 'bois'],
             dimensions: 'Dimensions du dessin : 440 × 760 mm',
             excerpt: 'Support : feuille 300 g, 575x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
             anchorX: 405,
@@ -296,7 +299,7 @@
             title: 'Grappe d’œufs clairs',
             generatedSrc: 'Images/Generated/Grappe d’œufs clairs.png',
             drawingSrc: 'Images/Dessins/Grappe d’œufs clairs_resultat.jpg',
-            tags: ['bois'],
+            tags: ['bois-profonds', 'bois'],
             dimensions: 'Dimensions du dessin : 400 × 570 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
             anchorX: 250,
@@ -424,16 +427,6 @@
           return { byKey, textHitboxes };
         };
 
-        const CARD_ANCHOR_HINTS = {
-          'baignoire-suspendue': { biome: 'sous-bois', slotX: 0.12, slotY: 0.2 },
-          'ruine-porche': { biome: 'ruines', slotX: 0.2, slotY: 0.18 },
-          'bassines-champignons': { biome: 'bois', slotX: 0.02, slotY: 0.1 },
-          'forme-marecageuse': { biome: 'marecages', slotX: 0.78, slotY: 0.1 },
-          'source-liminale': { biome: 'rivieres', slotX: 0.5, slotY: 0.72 },
-          'grappe-oeufs-clairs': { biome: 'interieurs', slotX: 0.05, slotY: 0.08 },
-          'bord-riviere': { biome: 'montagnes', slotX: 0.72, slotY: 0.7 },
-        };
-
         const makeCenteredRect = (anchorX, anchorY, card) => ({
           x: anchorX - card.cardW / 2,
           y: anchorY - card.cardH / 2,
@@ -443,26 +436,7 @@
 
         const getCardPrimaryBiome = (card) => resolveBiomeKeyFromTag(card.tags?.[0] || '');
 
-        const getAnchorCandidates = (card, biomeRect) => {
-          const hint = CARD_ANCHOR_HINTS[card.id];
-          const preferredSlot = [hint?.slotX ?? 0.5, hint?.slotY ?? 0.5];
-          const slots = [
-            preferredSlot,
-            [0.2, 0.2],
-            [0.8, 0.2],
-            [0.2, 0.8],
-            [0.8, 0.8],
-            [0.5, 0.16],
-            [0.5, 0.84],
-            [0.16, 0.5],
-            [0.84, 0.5],
-            [0.35, 0.35],
-            [0.65, 0.35],
-            [0.35, 0.65],
-            [0.65, 0.65],
-            [0.5, 0.5],
-          ];
-
+        const getAnchorCandidates = (card, originAnchor, biomeRect) => {
           const minX = biomeRect.x + card.cardW / 2;
           const maxX = biomeRect.x + biomeRect.w - card.cardW / 2;
           const minY = biomeRect.y + card.cardH / 2;
@@ -472,18 +446,40 @@
             return [];
           }
 
-          return slots.map(([slotX, slotY]) => ({
-            x: clamp(biomeRect.x + slotX * biomeRect.w, minX, maxX),
-            y: clamp(biomeRect.y + slotY * biomeRect.h, minY, maxY),
-          }));
+          const candidates = [];
+          const dedupe = new Set();
+          const ringStep = Math.max(card.cardW, card.cardH) * 0.26;
+          const ringCount = 9;
+          const samplesPerRing = 12;
+
+          const pushCandidate = (x, y) => {
+            const clampedX = clamp(x, minX, maxX);
+            const clampedY = clamp(y, minY, maxY);
+            const key = `${Math.round(clampedX)}:${Math.round(clampedY)}`;
+            if (dedupe.has(key)) {
+              return;
+            }
+            dedupe.add(key);
+            candidates.push({ x: clampedX, y: clampedY });
+          };
+
+          pushCandidate(originAnchor.x, originAnchor.y);
+
+          for (let ring = 1; ring <= ringCount; ring += 1) {
+            const radius = ring * ringStep;
+            for (let sample = 0; sample < samplesPerRing; sample += 1) {
+              const angle = (Math.PI * 2 * sample) / samplesPerRing;
+              pushCandidate(originAnchor.x + Math.cos(angle) * radius, originAnchor.y + Math.sin(angle) * radius);
+            }
+          }
+
+          return candidates;
         };
 
         const getCandidateBiomes = (card) => {
-          const hint = CARD_ANCHOR_HINTS[card.id];
           const fromTag1 = [getCardPrimaryBiome(card)].filter(Boolean);
-          const fromAnchor = hint?.biome ? [hint.biome] : [];
           const fromTags = (card.tags || []).map((tag) => resolveBiomeKeyFromTag(tag));
-          return [...new Set([...fromTag1, ...fromAnchor, ...fromTags])];
+          return [...new Set([...fromTag1, ...fromTags])];
         };
 
         const renderCards = () => {
@@ -505,7 +501,11 @@
                 return false;
               }
 
-              const candidates = getAnchorCandidates(card, biomeEntry.rect);
+              const textAnchor = {
+                x: biomeEntry.textHitbox.x + biomeEntry.textHitbox.w / 2,
+                y: biomeEntry.textHitbox.y + biomeEntry.textHitbox.h / 2,
+              };
+              const candidates = getAnchorCandidates(card, textAnchor, biomeEntry.rect);
               for (const anchor of candidates) {
                 const candidate = makeCenteredRect(anchor.x, anchor.y, card);
                 const overlapsCard = placedRects.some((existing) => rectsOverlap(candidate, existing, 6));
@@ -713,6 +713,9 @@
           const expanded = mobile ? !mobileInfoCollapsed : true;
           heroToggle.setAttribute('aria-expanded', String(expanded));
           heroDescription.hidden = !expanded;
+          if (heroExtra) {
+            heroExtra.hidden = !expanded;
+          }
         };
 
         viewport.addEventListener(
