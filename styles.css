@@ -140,7 +140,7 @@ body {
   position: absolute;
   inset: 0 auto auto 0;
   transform-origin: 0 0;
-  will-change: transform;
+  transform-style: preserve-3d;
 }
 
 .map-canvas {
@@ -160,10 +160,9 @@ body {
   border: 3px solid rgba(0, 0, 0, 0.5);
   border-radius: 24px;
   overflow: hidden;
-  background: #f9f8f3;
+  background: transparent;
   box-shadow:
-    0 8px 20px rgba(20, 24, 28, 0.12),
-    0 2px 8px rgba(20, 24, 28, 0.08);
+    0 6px 14px rgba(20, 24, 28, 0.1);
 }
 
 .board-card img {
@@ -171,7 +170,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #f3f0e8;
+  background: transparent;
 }
 
 .map-grid {
@@ -300,6 +299,13 @@ body {
   background-image:
     repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 10px),
     linear-gradient(180deg, #d0d4d8, #c3c8cc);
+}
+
+
+.map-grid,
+.tile {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @media (max-width: 960px) {
