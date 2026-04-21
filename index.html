@@ -112,10 +112,9 @@
 
     <script>
       (() => {
-        const MIN_SCALE = 0.35;
-        const MAX_SCALE = 3;
         const ZOOM_STEP = 1.12;
         const HD_ZOOM_THRESHOLD = 1.65;
+        const MAX_SCALE_FACTOR = 3;
 
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
@@ -177,10 +176,11 @@
             tags: ['sous-bois', 'bois'],
             dimensions: 'Dimensions du dessin : 440 × 760 mm',
             excerpt: 'Support : feuille 300 g, 575x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 1420,
-            anchorY: 980,
-            cardX: 1328,
-            cardY: 620,
+            anchorXPct: 0.94,
+            anchorYPct: 0.62,
+            cardCenterXPct: 0.94,
+            cardTopPct: 0.11,
+            cardHeightPct: 0.24,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 4,
@@ -193,10 +193,11 @@
             tags: ['ruines', 'bois-profonds'],
             dimensions: 'Dimensions du dessin : 495 × 760 mm',
             excerpt: 'Support : feuille 300 g, 595x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 480,
-            anchorY: 1160,
-            cardX: 372,
-            cardY: 590,
+            anchorXPct: 0.4,
+            anchorYPct: 0.86,
+            cardCenterXPct: 0.4,
+            cardTopPct: 0.03,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -209,10 +210,11 @@
             tags: ['bois', 'ruines'],
             dimensions: 'Dimensions du dessin : 400 × 570 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 860,
-            anchorY: 1260,
-            cardX: 760,
-            cardY: 510,
+            anchorXPct: 0.2,
+            anchorYPct: 0.6,
+            cardCenterXPct: 0.2,
+            cardTopPct: 0.1,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -225,10 +227,11 @@
             tags: ['marécage'],
             dimensions: 'Dimensions du dessin : 490 × 740 mm',
             excerpt: 'Support : feuille 300 g, 595x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 1185,
-            anchorY: 760,
-            cardX: 1094,
-            cardY: 504,
+            anchorXPct: 0.61,
+            anchorYPct: 0.55,
+            cardCenterXPct: 0.61,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -241,10 +244,11 @@
             tags: ['rivières', 'bois-profonds'],
             dimensions: 'Dimensions du dessin : 400 × 550 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 980,
-            anchorY: 1030,
-            cardX: 890,
-            cardY: 620,
+            anchorXPct: 0.5,
+            anchorYPct: 0.54,
+            cardCenterXPct: 0.5,
+            cardTopPct: 0.12,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -257,10 +261,11 @@
             tags: ['bois-profonds', 'bois'],
             dimensions: 'Dimensions du dessin : 400 × 570 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 1455,
-            anchorY: 680,
-            cardX: 1366,
-            cardY: 508,
+            anchorXPct: 0.86,
+            anchorYPct: 0.5,
+            cardCenterXPct: 0.86,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -273,10 +278,11 @@
             tags: ['rivières', 'montagnes'],
             dimensions: 'Dimensions du dessin : 400 × 550 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 1660,
-            anchorY: 1140,
-            cardX: 1572,
-            cardY: 738,
+            anchorXPct: 0.74,
+            anchorYPct: 0.49,
+            cardCenterXPct: 0.74,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.21,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 5,
@@ -296,6 +302,7 @@
           dragX: 0,
           dragY: 0,
         };
+        let baseScale = 1;
         const touchGesture = {
           mode: null,
           startScale: 1,
@@ -315,8 +322,9 @@
         };
 
         const applyTransform = () => {
+          constrainView();
           world.style.transform = `translate3d(${quantize(view.x)}px, ${quantize(view.y)}px, 0) scale(${view.scale})`;
-          const percent = Math.round(view.scale * 100);
+          const percent = Math.round((view.scale / baseScale) * 100);
           zoomValue.textContent = `${percent}%`;
           syncImageResolution();
         };
@@ -331,11 +339,35 @@
 
         const normalizeCard = (layout) => {
           const variant = THUMB_VARIANTS[layout.thumbVariant || 'portrait'] || THUMB_VARIANTS.portrait;
+          const mapW = boardContent.clientWidth;
+          const mapH = boardContent.clientHeight;
+          const aspectRatio = variant.width / variant.height;
+          const cardH = Math.round(mapH * clamp(layout.cardHeightPct || 0.21, 0.2, 0.25));
+          const cardW = Math.round(cardH * aspectRatio);
+          const centerX = Math.round(mapW * layout.cardCenterXPct);
           return {
             ...layout,
-            cardW: layout.cardW || variant.width,
-            cardH: layout.cardH || variant.height,
+            cardW,
+            cardH,
+            cardX: centerX - cardW / 2,
+            cardY: Math.round(mapH * layout.cardTopPct),
+            anchorX: Math.round(mapW * layout.anchorXPct),
+            anchorY: Math.round(mapH * layout.anchorYPct),
           };
+        };
+
+        const constrainView = () => {
+          const viewportRect = viewport.getBoundingClientRect();
+          const boardW = boardContent.clientWidth * view.scale;
+          const boardH = boardContent.clientHeight * view.scale;
+
+          const minX = Math.min(0, viewportRect.width - boardW);
+          const maxX = 0;
+          const minY = Math.min(0, viewportRect.height - boardH);
+          const maxY = 0;
+
+          view.x = clamp(view.x, minX, maxX);
+          view.y = clamp(view.y, minY, maxY);
         };
 
         const renderCards = () => {
@@ -424,24 +456,17 @@
           });
         };
 
-        const centerToFit = () => {
+        const resetCamera = () => {
           const viewportRect = viewport.getBoundingClientRect();
-          const boardRect = boardContent.getBoundingClientRect();
-
-          const fitScale = clamp(
-            Math.min((viewportRect.width * 0.88) / boardRect.width, (viewportRect.height * 0.88) / boardRect.height),
-            MIN_SCALE,
-            MAX_SCALE
-          );
-
-          view.scale = fitScale;
-          view.x = (viewportRect.width - boardRect.width * fitScale) / 2;
-          view.y = (viewportRect.height - boardRect.height * fitScale) / 2;
+          baseScale = viewportRect.width / boardContent.clientWidth;
+          view.scale = baseScale;
+          view.x = 0;
+          view.y = 0;
           applyTransform();
         };
 
         const zoomAtPoint = (nextScale, clientX, clientY) => {
-          const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+          const scale = clamp(nextScale, baseScale, baseScale * MAX_SCALE_FACTOR);
           const viewportRect = viewport.getBoundingClientRect();
           const pointerX = clientX - viewportRect.left;
           const pointerY = clientY - viewportRect.top;
@@ -648,7 +673,11 @@
               const [first, second] = event.touches;
               const midpoint = touchMidpoint(first, second);
               const nextDistance = Math.max(1, touchDistance(first, second));
-              const nextScale = clamp((nextDistance / touchGesture.startDistance) * touchGesture.startScale, MIN_SCALE, MAX_SCALE);
+              const nextScale = clamp(
+                (nextDistance / touchGesture.startDistance) * touchGesture.startScale,
+                baseScale,
+                baseScale * MAX_SCALE_FACTOR
+              );
 
               view.scale = nextScale;
               view.x = midpoint.clientX - touchGesture.worldX * view.scale;
@@ -750,7 +779,7 @@
           viewport.classList.remove('is-dragging');
         });
 
-        resetView.addEventListener('click', centerToFit);
+        resetView.addEventListener('click', resetCamera);
 
         window.addEventListener('keydown', (event) => {
           if (event.key === 'Escape' && !modal.hidden) {
@@ -779,16 +808,17 @@
 
           if (event.key === '0') {
             event.preventDefault();
-            centerToFit();
+            resetCamera();
           }
         });
 
-        window.addEventListener('resize', centerToFit);
+        window.addEventListener('resize', resetCamera);
 
         if (mapImage && !mapImage.complete) {
           mapImage.addEventListener('load', () => {
             syncMapDimensions();
-            centerToFit();
+            renderCards();
+            resetCamera();
           });
         } else {
           syncMapDimensions();
@@ -796,7 +826,7 @@
 
         renderCards();
         applyTheme(getInitialTheme());
-        centerToFit();
+        resetCamera();
         syncHeroDisclosure();
       })();
     </script>
