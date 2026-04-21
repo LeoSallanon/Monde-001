@@ -458,7 +458,9 @@
 
         const resetCamera = () => {
           const viewportRect = viewport.getBoundingClientRect();
-          baseScale = viewportRect.width / boardContent.clientWidth;
+          const widthScale = viewportRect.width / boardContent.clientWidth;
+          const heightScale = viewportRect.height / boardContent.clientHeight;
+          baseScale = Math.max(widthScale, heightScale);
           view.scale = baseScale;
           view.x = 0;
           view.y = 0;
