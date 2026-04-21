@@ -262,8 +262,15 @@ body.info-open .hero {
   pointer-events: none;
 }
 
+.board-hud__left {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
 .reset-chip,
-.zoom-chip {
+.zoom-chip,
+.fullscreen-chip {
   box-shadow: 0 8px 18px rgba(14, 18, 22, 0.16);
 }
 
@@ -277,6 +284,40 @@ body.info-open .hero {
   min-width: 4.2rem;
   text-align: center;
   padding: 0.64rem 0.92rem;
+}
+
+.fullscreen-chip {
+  pointer-events: auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fullscreen-chip__icon {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: none;
+}
+
+.fullscreen-chip__icon--enter {
+  display: block;
+}
+
+.fullscreen-chip.is-active .fullscreen-chip__icon--enter {
+  display: none;
+}
+
+.fullscreen-chip.is-active .fullscreen-chip__icon--exit {
+  display: block;
 }
 
 .map-overlays {

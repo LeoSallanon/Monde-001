@@ -71,7 +71,24 @@
             </div>
           </div>
           <div class="board-hud" aria-hidden="true">
-            <button type="button" class="reset-chip" data-action="reset-view">Reset view</button>
+            <div class="board-hud__left">
+              <button type="button" class="reset-chip" data-action="reset-view">Reset view</button>
+              <button
+                type="button"
+                class="fullscreen-chip"
+                data-action="toggle-fullscreen"
+                aria-label="Activer le plein écran"
+                aria-pressed="false"
+              >
+                <svg class="fullscreen-chip__icon fullscreen-chip__icon--enter" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path>
+                </svg>
+                <svg class="fullscreen-chip__icon fullscreen-chip__icon--exit" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"></path>
+                  <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5"></path>
+                </svg>
+              </button>
+            </div>
             <span class="zoom-chip" data-role="zoom-value">100%</span>
           </div>
         </div>
@@ -139,6 +156,7 @@
 
         const zoomValue = document.querySelector('[data-role="zoom-value"]');
         const resetView = document.querySelector('[data-action="reset-view"]');
+        const fullscreenButton = document.querySelector('[data-action="toggle-fullscreen"]');
 
         let focusedBeforeModal = null;
         let infoPanelOpen = false;
@@ -582,6 +600,26 @@
           }
         };
 
+        const syncFullscreenState = () => {
+          const isFullscreen = Boolean(document.fullscreenElement);
+          fullscreenButton?.setAttribute('aria-pressed', String(isFullscreen));
+          fullscreenButton?.setAttribute('aria-label', isFullscreen ? 'Quitter le plein écran' : 'Activer le plein écran');
+          fullscreenButton?.classList.toggle('is-active', isFullscreen);
+        };
+
+        const toggleFullscreen = async () => {
+          try {
+            if (document.fullscreenElement) {
+              await document.exitFullscreen();
+            } else {
+              await document.documentElement.requestFullscreen();
+            }
+          } catch (_error) {
+            // Ignore user-agent fullscreen errors (gesture policy, etc).
+          }
+          syncFullscreenState();
+        };
+
         viewport.addEventListener(
           'wheel',
           (event) => {
@@ -795,6 +833,8 @@
         });
 
         resetView.addEventListener('click', resetCamera);
+        fullscreenButton?.addEventListener('click', toggleFullscreen);
+        document.addEventListener('fullscreenchange', syncFullscreenState);
 
         window.addEventListener('keydown', (event) => {
           if (event.key === 'Escape' && !modal.hidden) {
@@ -843,6 +883,7 @@
         applyTheme(getInitialTheme());
         resetCamera();
         syncHeroDisclosure();
+        syncFullscreenState();
       })();
     </script>
   </body>
