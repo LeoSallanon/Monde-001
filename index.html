@@ -15,7 +15,7 @@
   <body>
     <main class="page">
       <div class="ui-header">
-        <h1>Cartographie Monde-001</h1>
+        <h1><span>Cartographie</span><span>Monde-001</span></h1>
         <button type="button" class="info-toggle" data-action="toggle-hero-info" aria-expanded="false">Info</button>
       </div>
 
@@ -114,7 +114,7 @@
       (() => {
         const ZOOM_STEP = 1.12;
         const HD_ZOOM_THRESHOLD = 1.65;
-        const MAX_SCALE_FACTOR = 3;
+        const MAX_SCALE_FACTOR = 5;
 
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
@@ -180,7 +180,7 @@
             anchorYPct: 0.62,
             cardCenterXPct: 0.94,
             cardTopPct: 0.11,
-            cardHeightPct: 0.24,
+            cardHeightPct: 0.16,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 4,
@@ -197,7 +197,7 @@
             anchorYPct: 0.86,
             cardCenterXPct: 0.4,
             cardTopPct: 0.03,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -214,7 +214,7 @@
             anchorYPct: 0.6,
             cardCenterXPct: 0.2,
             cardTopPct: 0.1,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -231,7 +231,7 @@
             anchorYPct: 0.55,
             cardCenterXPct: 0.61,
             cardTopPct: 0.04,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -248,7 +248,7 @@
             anchorYPct: 0.54,
             cardCenterXPct: 0.5,
             cardTopPct: 0.12,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -265,7 +265,7 @@
             anchorYPct: 0.5,
             cardCenterXPct: 0.86,
             cardTopPct: 0.04,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -282,7 +282,7 @@
             anchorYPct: 0.49,
             cardCenterXPct: 0.74,
             cardTopPct: 0.04,
-            cardHeightPct: 0.21,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 5,
@@ -342,7 +342,7 @@
           const mapW = boardContent.clientWidth;
           const mapH = boardContent.clientHeight;
           const aspectRatio = variant.width / variant.height;
-          const cardH = Math.round(mapH * clamp(layout.cardHeightPct || 0.21, 0.2, 0.25));
+          const cardH = Math.round(mapH * clamp(layout.cardHeightPct || 0.14, 0.12, 0.18));
           const cardW = Math.round(cardH * aspectRatio);
           const centerX = Math.round(mapW * layout.cardCenterXPct);
           return {
