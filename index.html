@@ -2,116 +2,71 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>Carte Biomes — Monde</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Urbanist:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="page">
-      <header class="hero">
-        <div class="hero__topline">
-          <h1>cartographie Monde-001</h1>
-          <div class="hero__actions">
-            <button type="button" class="hero__toggle" data-action="toggle-hero-info" aria-expanded="true">
-              Infos
-            </button>
-          </div>
-        </div>
-        <div data-role="hero-extra">
-          <p class="hero__description" data-role="hero-description">
-            Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
-            scindé en différents biomes. Les Dessins issues des images sont tracés par une machine en utilisant un stylo
-            plume.
-          </p>
-          <section class="hero-guide" aria-label="Navigation de la carte">
+      <div class="ui-header">
+        <h1><span>Cartographie</span><span>Monde-001</span></h1>
+        <button type="button" class="info-toggle" data-action="toggle-hero-info" aria-expanded="false">Info</button>
+      </div>
+
+      <aside class="hero" data-role="hero-extra" aria-hidden="true">
+        <p class="hero__description" data-role="hero-description">
+          Chaque image constitue une fenêtre sur un lieu remarquable d’un univers, un point de vue vers ce monde
+          sensible. Les dessins issus des images sont tracés par une machine en utilisant un stylo plume.
+        </p>
+        <section class="hero-guide" aria-label="Navigation de la carte">
           <h2 class="hero-guide__title">Navigation</h2>
           <ul class="hero-guide__list">
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M8.3 3.8h4.4a5 5 0 0 1 5 5v6.8a4.6 4.6 0 0 1-4.6 4.6h-5.6A4.6 4.6 0 0 1 3 15.6V9.1a5.3 5.3 0 0 1 5.3-5.3Z"></path>
-                  <path d="M10.8 3.8v7.3"></path>
-                  <path d="M8.2 10.8h5.2"></path>
-                </svg>
-              </span>
               <p>Cliquer une image pour ouvrir son détail.</p>
             </li>
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 4.2v15.6"></path>
-                  <path d="M4.2 12h15.6"></path>
-                  <path d="m9.2 7.2 2.8-3 2.8 3"></path>
-                  <path d="m9.2 16.8 2.8 3 2.8-3"></path>
-                  <path d="m7.2 9.2-3 2.8 3 2.8"></path>
-                  <path d="m16.8 9.2 3 2.8-3 2.8"></path>
-                </svg>
-              </span>
-              <p>Maintenir la molette + glisser pour se déplacer sur les axes X/Y.</p>
+              <p>Maintenir la molette + glisser pour naviguer.</p>
             </li>
             <li class="hero-guide__item">
-              <span class="hero-guide__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <circle cx="10.1" cy="11.4" r="4.1"></circle>
-                  <path d="M13.2 14.6 17.6 19"></path>
-                  <path d="M18.4 6.2v6.2"></path>
-                  <path d="M15.3 9.3h6.2"></path>
-                </svg>
-              </span>
               <p>Utiliser la molette pour zoomer autour du pointeur.</p>
             </li>
           </ul>
-          </section>
-          <div class="hero__footer">
-            <button
-              type="button"
-              class="theme-toggle"
-              data-action="toggle-theme"
-              data-theme-mode="light"
-              aria-pressed="false"
-              aria-label="Activer le mode sombre"
-            >
-              <span class="theme-toggle__icon" aria-hidden="true">
-                <svg class="theme-toggle__glyph theme-toggle__glyph--moon" viewBox="0 0 24 24" focusable="false">
-                  <path d="M14.7 3.6a8.8 8.8 0 1 0 5.7 15.2 8 8 0 1 1-5.7-15.2z"></path>
-                </svg>
-                <svg class="theme-toggle__glyph theme-toggle__glyph--sun" viewBox="0 0 24 24" focusable="false">
-                  <circle cx="12" cy="12" r="3.9"></circle>
-                  <path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6.4 6.4l1.7 1.7M15.9 15.9l1.7 1.7M17.6 6.4l-1.7 1.7M8.1 15.9l-1.7 1.7"></path>
-                </svg>
-              </span>
-              <span data-role="theme-label">Mode sombre</span>
-            </button>
-          </div>
+        </section>
+        <div class="hero__footer">
+          <button
+            type="button"
+            class="theme-toggle"
+            data-action="toggle-theme"
+            data-theme-mode="light"
+            aria-pressed="false"
+            aria-label="Activer le mode sombre"
+          >
+            <span class="theme-toggle__icon" aria-hidden="true">
+              <svg class="theme-toggle__glyph theme-toggle__glyph--moon" viewBox="0 0 24 24" focusable="false">
+                <path d="M14.7 3.6a8.8 8.8 0 1 0 5.7 15.2 8 8 0 1 1-5.7-15.2z"></path>
+              </svg>
+              <svg class="theme-toggle__glyph theme-toggle__glyph--sun" viewBox="0 0 24 24" focusable="false">
+                <circle cx="12" cy="12" r="3.9"></circle>
+                <path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6.4 6.4l1.7 1.7M15.9 15.9l1.7 1.7M17.6 6.4l-1.7 1.7M8.1 15.9l-1.7 1.7"></path>
+              </svg>
+            </span>
+            <span data-role="theme-label">Mode sombre</span>
+          </button>
         </div>
-      </header>
+      </aside>
 
-      <section class="map-shell" aria-label="Carte des biomes">
+      <section class="map-shell" aria-label="Carte des œuvres">
         <div class="map-viewport" data-role="viewport" tabindex="0">
           <div class="map-world" data-role="world">
             <div class="map-canvas" data-role="board-content">
-              <div class="map-grid" data-role="vector-layer">
-                <article class="tile tile-sous-bois" data-biome="sous-bois">Sous bois</article>
-                <article class="tile tile-chemins" data-biome="chemins">Chemins</article>
-                <article class="tile tile-tundra" data-biome="tundra">Tundra</article>
-                <article class="tile tile-plaines" data-biome="plaines">Plaines</article>
-                <article class="tile tile-simulation" data-biome="simulation">Simulation</article>
-                <article class="tile tile-bois" data-biome="bois">Bois</article>
-                <article class="tile tile-lacs" data-biome="lacs-etangs">Lacs / Étangs</article>
-                <article class="tile tile-ruines" data-biome="ruines">Ruines</article>
-                <article class="tile tile-marecages" data-biome="marecages">Marécages</article>
-                <article class="tile tile-falaises" data-biome="falaises">Falaises</article>
-                <article class="tile tile-interieurs" data-biome="interieurs">Intérieurs</article>
-                <article class="tile tile-bois-profonds" data-biome="bois-profonds">Bois profonds</article>
-                <article class="tile tile-rivieres" data-biome="rivieres">Rivières</article>
-                <article class="tile tile-montagnes" data-biome="montagnes">Montagnes</article>
-              </div>
+              <img class="map-backdrop" data-role="map-image" src="Images/Fond.jpg" alt="" aria-hidden="true" />
+              <div class="map-tint" aria-hidden="true"></div>
               <div class="map-overlays" data-role="map-overlays" aria-hidden="true"></div>
             </div>
           </div>
@@ -157,16 +112,15 @@
 
     <script>
       (() => {
-        const MIN_SCALE = 0.35;
-        const MAX_SCALE = 3;
         const ZOOM_STEP = 1.12;
         const HD_ZOOM_THRESHOLD = 1.65;
+        const MAX_SCALE_FACTOR = 5;
 
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
         const boardContent = document.querySelector('[data-role="board-content"]');
+        const mapImage = document.querySelector('[data-role="map-image"]');
         const overlays = document.querySelector('[data-role="map-overlays"]');
-        const heroDescription = document.querySelector('[data-role="hero-description"]');
         const heroExtra = document.querySelector('[data-role="hero-extra"]');
         const heroToggle = document.querySelector('[data-action="toggle-hero-info"]');
         const modal = document.querySelector('[data-role="artwork-modal"]');
@@ -187,7 +141,7 @@
         const resetView = document.querySelector('[data-action="reset-view"]');
 
         let focusedBeforeModal = null;
-        let mobileInfoCollapsed = true;
+        let infoPanelOpen = false;
         const THEME_STORAGE_KEY = 'monde-001-theme';
 
         const applyTheme = (theme) => {
@@ -222,10 +176,11 @@
             tags: ['sous-bois', 'bois'],
             dimensions: 'Dimensions du dessin : 440 × 760 mm',
             excerpt: 'Support : feuille 300 g, 575x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 405,
-            anchorY: 260,
-            cardX: 340,
-            cardY: 96,
+            anchorXPct: 0.94,
+            anchorYPct: 0.62,
+            cardCenterXPct: 0.94,
+            cardTopPct: 0.11,
+            cardHeightPct: 0.16,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 4,
@@ -238,10 +193,11 @@
             tags: ['ruines', 'bois-profonds'],
             dimensions: 'Dimensions du dessin : 495 × 760 mm',
             excerpt: 'Support : feuille 300 g, 595x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 280,
-            anchorY: 500,
-            cardX: 40,
-            cardY: 520,
+            anchorXPct: 0.4,
+            anchorYPct: 0.86,
+            cardCenterXPct: 0.4,
+            cardTopPct: 0.03,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -254,10 +210,11 @@
             tags: ['bois', 'ruines'],
             dimensions: 'Dimensions du dessin : 400 × 570 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 320,
-            anchorY: 330,
-            cardX: 60,
-            cardY: 120,
+            anchorXPct: 0.2,
+            anchorYPct: 0.6,
+            cardCenterXPct: 0.2,
+            cardTopPct: 0.1,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -270,10 +227,11 @@
             tags: ['marécage'],
             dimensions: 'Dimensions du dessin : 490 × 740 mm',
             excerpt: 'Support : feuille 300 g, 595x840 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 540,
-            anchorY: 430,
-            cardX: 700,
-            cardY: 500,
+            anchorXPct: 0.61,
+            anchorYPct: 0.55,
+            cardCenterXPct: 0.61,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 6,
@@ -286,10 +244,11 @@
             tags: ['rivières', 'bois-profonds'],
             dimensions: 'Dimensions du dessin : 400 × 550 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 705,
-            anchorY: 612,
-            cardX: 560,
-            cardY: 690,
+            anchorXPct: 0.5,
+            anchorYPct: 0.54,
+            cardCenterXPct: 0.5,
+            cardTopPct: 0.12,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -302,10 +261,11 @@
             tags: ['bois-profonds', 'bois'],
             dimensions: 'Dimensions du dessin : 400 × 570 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 250,
-            anchorY: 350,
-            cardX: 220,
-            cardY: 520,
+            anchorXPct: 0.86,
+            anchorYPct: 0.5,
+            cardCenterXPct: 0.86,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 7,
@@ -318,10 +278,11 @@
             tags: ['rivières', 'montagnes'],
             dimensions: 'Dimensions du dessin : 400 × 550 mm',
             excerpt: 'Support : feuille 300 g, 500x650 mm\nEncre noire, stylo plume\nTirage unique / 2026',
-            anchorX: 705,
-            anchorY: 725,
-            cardX: 820,
-            cardY: 700,
+            anchorXPct: 0.74,
+            anchorYPct: 0.49,
+            cardCenterXPct: 0.74,
+            cardTopPct: 0.04,
+            cardHeightPct: 0.14,
             thumbVariant: 'portrait',
             modalVariant: 'portrait',
             zIndex: 5,
@@ -341,6 +302,7 @@
           dragX: 0,
           dragY: 0,
         };
+        let baseScale = 1;
         const touchGesture = {
           mode: null,
           startScale: 1,
@@ -360,8 +322,9 @@
         };
 
         const applyTransform = () => {
+          constrainView();
           world.style.transform = `translate3d(${quantize(view.x)}px, ${quantize(view.y)}px, 0) scale(${view.scale})`;
-          const percent = Math.round(view.scale * 100);
+          const percent = Math.round((view.scale / baseScale) * 100);
           zoomValue.textContent = `${percent}%`;
           syncImageResolution();
         };
@@ -376,176 +339,64 @@
 
         const normalizeCard = (layout) => {
           const variant = THUMB_VARIANTS[layout.thumbVariant || 'portrait'] || THUMB_VARIANTS.portrait;
+          const mapW = boardContent.clientWidth;
+          const mapH = boardContent.clientHeight;
+          const aspectRatio = variant.width / variant.height;
+          const cardH = Math.round(mapH * clamp(layout.cardHeightPct || 0.14, 0.12, 0.18));
+          const cardW = Math.round(cardH * aspectRatio);
+          const centerX = Math.round(mapW * layout.cardCenterXPct);
           return {
             ...layout,
-            cardW: layout.cardW || variant.width,
-            cardH: layout.cardH || variant.height,
+            cardW,
+            cardH,
+            cardX: centerX - cardW / 2,
+            cardY: Math.round(mapH * layout.cardTopPct),
+            anchorX: Math.round(mapW * layout.anchorXPct),
+            anchorY: Math.round(mapH * layout.anchorYPct),
           };
         };
 
-        const normalizeTag = (value) =>
-          (value || '')
-            .normalize('NFD')
-            .replace(/\p{Diacritic}/gu, '')
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        const constrainView = () => {
+          const viewportRect = viewport.getBoundingClientRect();
+          const boardW = boardContent.clientWidth * view.scale;
+          const boardH = boardContent.clientHeight * view.scale;
 
-        const BIOME_TAG_ALIASES = new Map([
-          ['lacs', 'lacs-etangs'],
-          ['etangs', 'lacs-etangs'],
-          ['etang', 'lacs-etangs'],
-          ['marecage', 'marecages'],
-          ['marecages', 'marecages'],
-          ['rivieres', 'rivieres'],
-          ['riviere', 'rivieres'],
-        ]);
+          const minX = Math.min(0, viewportRect.width - boardW);
+          const maxX = 0;
+          const minY = Math.min(0, viewportRect.height - boardH);
+          const maxY = 0;
 
-        const resolveBiomeKeyFromTag = (tag) => BIOME_TAG_ALIASES.get(normalizeTag(tag)) || normalizeTag(tag);
-
-        const rectsOverlap = (a, b, gap = 0) =>
-          a.x - gap < b.x + b.w && a.x + a.w + gap > b.x && a.y - gap < b.y + b.h && a.y + a.h + gap > b.y;
-
-        const getBiomeData = () => {
-          const tiles = Array.from(boardContent.querySelectorAll('.tile[data-biome]'));
-          const boardRect = boardContent.getBoundingClientRect();
-          const byKey = new Map();
-          const textHitboxes = [];
-
-          tiles.forEach((tile) => {
-            const tileRect = tile.getBoundingClientRect();
-            const x = tileRect.left - boardRect.left;
-            const y = tileRect.top - boardRect.top;
-            const w = tileRect.width;
-            const h = tileRect.height;
-            const hitboxW = clamp(w * 0.68, 90, w - 10);
-            const hitboxH = clamp(h * 0.36, 28, h - 10);
-            const textHitbox = {
-              x: x + (w - hitboxW) / 2,
-              y: y + (h - hitboxH) / 2,
-              w: hitboxW,
-              h: hitboxH,
-            };
-            const biomeKey = resolveBiomeKeyFromTag(tile.dataset.biome);
-            byKey.set(biomeKey, { rect: { x, y, w, h }, textHitbox });
-            textHitboxes.push(textHitbox);
-          });
-
-          return { byKey, textHitboxes };
-        };
-
-        const makeCenteredRect = (anchorX, anchorY, card) => ({
-          x: anchorX - card.cardW / 2,
-          y: anchorY - card.cardH / 2,
-          w: card.cardW,
-          h: card.cardH,
-        });
-
-        const getCardPrimaryBiome = (card) => resolveBiomeKeyFromTag(card.tags?.[0] || '');
-
-        const getAnchorCandidates = (card, originAnchor, biomeRect) => {
-          const minX = biomeRect.x + card.cardW / 2;
-          const maxX = biomeRect.x + biomeRect.w - card.cardW / 2;
-          const minY = biomeRect.y + card.cardH / 2;
-          const maxY = biomeRect.y + biomeRect.h - card.cardH / 2;
-
-          if (minX > maxX || minY > maxY) {
-            return [];
-          }
-
-          const candidates = [];
-          const dedupe = new Set();
-          const ringStep = Math.max(card.cardW, card.cardH) * 0.26;
-          const ringCount = 9;
-          const samplesPerRing = 12;
-
-          const pushCandidate = (x, y) => {
-            const clampedX = clamp(x, minX, maxX);
-            const clampedY = clamp(y, minY, maxY);
-            const key = `${Math.round(clampedX)}:${Math.round(clampedY)}`;
-            if (dedupe.has(key)) {
-              return;
-            }
-            dedupe.add(key);
-            candidates.push({ x: clampedX, y: clampedY });
-          };
-
-          pushCandidate(originAnchor.x, originAnchor.y);
-
-          for (let ring = 1; ring <= ringCount; ring += 1) {
-            const radius = ring * ringStep;
-            for (let sample = 0; sample < samplesPerRing; sample += 1) {
-              const angle = (Math.PI * 2 * sample) / samplesPerRing;
-              pushCandidate(originAnchor.x + Math.cos(angle) * radius, originAnchor.y + Math.sin(angle) * radius);
-            }
-          }
-
-          return candidates;
-        };
-
-        const getCandidateBiomes = (card) => {
-          const fromTag1 = [getCardPrimaryBiome(card)].filter(Boolean);
-          const fromTags = (card.tags || []).map((tag) => resolveBiomeKeyFromTag(tag));
-          return [...new Set([...fromTag1, ...fromTags])];
+          view.x = clamp(view.x, minX, maxX);
+          view.y = clamp(view.y, minY, maxY);
         };
 
         const renderCards = () => {
           const resolvedCards = ARTWORK_LAYOUTS.map((layout) => normalizeCard(layout));
-          const biomeData = getBiomeData();
-          const placedRects = [];
-          const placedAnchors = [];
-
-          resolvedCards.forEach((card) => {
-            const candidateBiomes = getCandidateBiomes(card);
-            let chosenAnchor = null;
-            let chosenRect = null;
-
-            const anchorSpacing = Math.max(card.cardW, card.cardH) * 0.9;
-
-            candidateBiomes.some((biomeKey) => {
-              const biomeEntry = biomeData.byKey.get(biomeKey);
-              if (!biomeEntry) {
-                return false;
-              }
-
-              const textAnchor = {
-                x: biomeEntry.textHitbox.x + biomeEntry.textHitbox.w / 2,
-                y: biomeEntry.textHitbox.y + biomeEntry.textHitbox.h / 2,
-              };
-              const candidates = getAnchorCandidates(card, textAnchor, biomeEntry.rect);
-              for (const anchor of candidates) {
-                const candidate = makeCenteredRect(anchor.x, anchor.y, card);
-                const overlapsCard = placedRects.some((existing) => rectsOverlap(candidate, existing, 6));
-                const overlapsText = biomeData.textHitboxes.some((hitbox) => rectsOverlap(candidate, hitbox, 4));
-                const tooCloseFromAnchor = placedAnchors.some(
-                  (existingAnchor) => Math.hypot(anchor.x - existingAnchor.x, anchor.y - existingAnchor.y) < anchorSpacing
-                );
-                if (overlapsCard || overlapsText || tooCloseFromAnchor) {
-                  continue;
-                }
-                chosenAnchor = anchor;
-                chosenRect = candidate;
-                break;
-              }
-              return Boolean(chosenAnchor);
-            });
-
-            if (!chosenRect) {
-              const fallbackX = clamp(card.cardX, 0, Math.max(0, boardContent.clientWidth - card.cardW));
-              const fallbackY = clamp(card.cardY, 0, Math.max(0, boardContent.clientHeight - card.cardH));
-              chosenRect = { x: fallbackX, y: fallbackY, w: card.cardW, h: card.cardH };
-              chosenAnchor = { x: chosenRect.x + card.cardW / 2, y: chosenRect.y + card.cardH / 2 };
-            }
-
-            card.cardX = chosenRect.x;
-            card.cardY = chosenRect.y;
-            placedRects.push(chosenRect);
-            placedAnchors.push(chosenAnchor);
-          });
 
           overlays.innerHTML = '';
 
           resolvedCards.forEach((card) => {
+            const anchorX = card.anchorX;
+            const anchorY = card.anchorY;
+            const cardCenterX = card.cardX + card.cardW / 2;
+            const cardBottomY = card.cardY + card.cardH;
+            const lineLength = Math.max(24, anchorY - cardBottomY);
+            const lineDeltaX = anchorX - cardCenterX;
+            const lineAngle = (Math.atan2(lineLength, lineDeltaX) * 180) / Math.PI;
+            const lineDistance = Math.hypot(lineDeltaX, lineLength);
+
+            const marker = document.createElement('div');
+            marker.className = 'board-marker';
+            marker.style.left = `${cardCenterX}px`;
+            marker.style.top = `${cardBottomY}px`;
+            marker.style.width = `${lineDistance}px`;
+            marker.style.transform = `rotate(${lineAngle}deg)`;
+
+            const pin = document.createElement('div');
+            pin.className = 'board-pin';
+            pin.style.left = `${anchorX}px`;
+            pin.style.top = `${anchorY}px`;
+
             const figure = document.createElement('figure');
             figure.className = 'board-card';
             figure.style.left = `${card.cardX}px`;
@@ -570,10 +421,20 @@
             image.dataset.hd = 'false';
 
             figure.appendChild(image);
+            overlays.appendChild(marker);
+            overlays.appendChild(pin);
             overlays.appendChild(figure);
           });
 
           syncImageResolution();
+        };
+
+        const syncMapDimensions = () => {
+          if (!mapImage || !mapImage.naturalWidth || !mapImage.naturalHeight) {
+            return;
+          }
+          boardContent.style.width = `${mapImage.naturalWidth}px`;
+          boardContent.style.height = `${mapImage.naturalHeight}px`;
         };
 
         const syncImageResolution = () => {
@@ -595,24 +456,19 @@
           });
         };
 
-        const centerToFit = () => {
+        const resetCamera = () => {
           const viewportRect = viewport.getBoundingClientRect();
-          const boardRect = boardContent.getBoundingClientRect();
-
-          const fitScale = clamp(
-            Math.min((viewportRect.width * 0.88) / boardRect.width, (viewportRect.height * 0.88) / boardRect.height),
-            MIN_SCALE,
-            MAX_SCALE
-          );
-
-          view.scale = fitScale;
-          view.x = (viewportRect.width - boardRect.width * fitScale) / 2;
-          view.y = (viewportRect.height - boardRect.height * fitScale) / 2;
+          const widthScale = viewportRect.width / boardContent.clientWidth;
+          const heightScale = viewportRect.height / boardContent.clientHeight;
+          baseScale = Math.max(widthScale, heightScale);
+          view.scale = baseScale;
+          view.x = 0;
+          view.y = 0;
           applyTransform();
         };
 
         const zoomAtPoint = (nextScale, clientX, clientY) => {
-          const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+          const scale = clamp(nextScale, baseScale, baseScale * MAX_SCALE_FACTOR);
           const viewportRect = viewport.getBoundingClientRect();
           const pointerX = clientX - viewportRect.left;
           const pointerY = clientY - viewportRect.top;
@@ -719,12 +575,10 @@
         };
 
         const syncHeroDisclosure = () => {
-          const mobile = window.matchMedia('(max-width: 960px)').matches;
-          const expanded = mobile ? !mobileInfoCollapsed : true;
-          heroToggle.setAttribute('aria-expanded', String(expanded));
-          heroDescription.hidden = !expanded;
+          heroToggle?.setAttribute('aria-expanded', String(infoPanelOpen));
+          document.body.classList.toggle('info-open', infoPanelOpen);
           if (heroExtra) {
-            heroExtra.hidden = !expanded;
+            heroExtra.setAttribute('aria-hidden', String(!infoPanelOpen));
           }
         };
 
@@ -740,7 +594,7 @@
         );
 
         heroToggle.addEventListener('click', () => {
-          mobileInfoCollapsed = !mobileInfoCollapsed;
+          infoPanelOpen = !infoPanelOpen;
           syncHeroDisclosure();
         });
 
@@ -761,7 +615,10 @@
         viewport.addEventListener(
           'mousedown',
           (event) => {
-            if (event.button !== 1) {
+            const clickedCard = event.target.closest('.board-card');
+            const shouldPanWithLeftButton = event.button === 0 && !clickedCard;
+            const shouldPanWithMiddleButton = event.button === 1;
+            if (!shouldPanWithLeftButton && !shouldPanWithMiddleButton) {
               return;
             }
 
@@ -821,7 +678,11 @@
               const [first, second] = event.touches;
               const midpoint = touchMidpoint(first, second);
               const nextDistance = Math.max(1, touchDistance(first, second));
-              const nextScale = clamp((nextDistance / touchGesture.startDistance) * touchGesture.startScale, MIN_SCALE, MAX_SCALE);
+              const nextScale = clamp(
+                (nextDistance / touchGesture.startDistance) * touchGesture.startScale,
+                baseScale,
+                baseScale * MAX_SCALE_FACTOR
+              );
 
               view.scale = nextScale;
               view.x = midpoint.clientX - touchGesture.worldX * view.scale;
@@ -905,6 +766,16 @@
           }
         });
 
+        modal.addEventListener(
+          'touchmove',
+          (event) => {
+            if (!modal.hidden) {
+              event.preventDefault();
+            }
+          },
+          { passive: false }
+        );
+
         modalSwapButton?.addEventListener('click', toggleModalImages);
         modalDetail?.addEventListener('click', toggleModalImages);
 
@@ -923,7 +794,7 @@
           viewport.classList.remove('is-dragging');
         });
 
-        resetView.addEventListener('click', centerToFit);
+        resetView.addEventListener('click', resetCamera);
 
         window.addEventListener('keydown', (event) => {
           if (event.key === 'Escape' && !modal.hidden) {
@@ -952,19 +823,25 @@
 
           if (event.key === '0') {
             event.preventDefault();
-            centerToFit();
+            resetCamera();
           }
         });
 
-        window.addEventListener('resize', () => {
-          renderCards();
-          centerToFit();
-          syncHeroDisclosure();
-        });
+        window.addEventListener('resize', resetCamera);
+
+        if (mapImage && !mapImage.complete) {
+          mapImage.addEventListener('load', () => {
+            syncMapDimensions();
+            renderCards();
+            resetCamera();
+          });
+        } else {
+          syncMapDimensions();
+        }
 
         renderCards();
         applyTheme(getInitialTheme());
-        centerToFit();
+        resetCamera();
         syncHeroDisclosure();
       })();
     </script>
