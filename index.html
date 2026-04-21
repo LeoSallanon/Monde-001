@@ -65,7 +65,7 @@
         <div class="map-viewport" data-role="viewport" tabindex="0">
           <div class="map-world" data-role="world">
             <div class="map-canvas" data-role="board-content">
-              <div class="map-backdrop" aria-hidden="true"></div>
+              <img class="map-backdrop" data-role="map-image" src="Images/Fond.jpg" alt="" aria-hidden="true" />
               <div class="map-tint" aria-hidden="true"></div>
               <div class="map-overlays" data-role="map-overlays" aria-hidden="true"></div>
             </div>
@@ -120,6 +120,7 @@
         const viewport = document.querySelector('[data-role="viewport"]');
         const world = document.querySelector('[data-role="world"]');
         const boardContent = document.querySelector('[data-role="board-content"]');
+        const mapImage = document.querySelector('[data-role="map-image"]');
         const overlays = document.querySelector('[data-role="map-overlays"]');
         const heroExtra = document.querySelector('[data-role="hero-extra"]');
         const heroToggle = document.querySelector('[data-action="toggle-hero-info"]');
@@ -394,6 +395,14 @@
           });
 
           syncImageResolution();
+        };
+
+        const syncMapDimensions = () => {
+          if (!mapImage || !mapImage.naturalWidth || !mapImage.naturalHeight) {
+            return;
+          }
+          boardContent.style.width = `${mapImage.naturalWidth}px`;
+          boardContent.style.height = `${mapImage.naturalHeight}px`;
         };
 
         const syncImageResolution = () => {
@@ -775,6 +784,15 @@
         });
 
         window.addEventListener('resize', centerToFit);
+
+        if (mapImage && !mapImage.complete) {
+          mapImage.addEventListener('load', () => {
+            syncMapDimensions();
+            centerToFit();
+          });
+        } else {
+          syncMapDimensions();
+        }
 
         renderCards();
         applyTheme(getInitialTheme());
