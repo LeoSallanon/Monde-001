@@ -2,12 +2,12 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>Carte Biomes — Monde</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Urbanist:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -615,7 +615,10 @@
         viewport.addEventListener(
           'mousedown',
           (event) => {
-            if (event.button !== 1) {
+            const clickedCard = event.target.closest('.board-card');
+            const shouldPanWithLeftButton = event.button === 0 && !clickedCard;
+            const shouldPanWithMiddleButton = event.button === 1;
+            if (!shouldPanWithLeftButton && !shouldPanWithMiddleButton) {
               return;
             }
 
@@ -762,6 +765,16 @@
             closeModal();
           }
         });
+
+        modal.addEventListener(
+          'touchmove',
+          (event) => {
+            if (!modal.hidden) {
+              event.preventDefault();
+            }
+          },
+          { passive: false }
+        );
 
         modalSwapButton?.addEventListener('click', toggleModalImages);
         modalDetail?.addEventListener('click', toggleModalImages);

@@ -52,7 +52,7 @@ body {
 body {
   margin: 0;
   overflow: hidden;
-  font-family: "Inter", sans-serif;
+  font-family: "Urbanist", "Avenir Next", "Nunito Sans", sans-serif;
   color: var(--ink);
   background: var(--bg);
 }
@@ -407,8 +407,8 @@ body.info-open .hero {
 
 .artwork-modal__meta h2 {
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 500;
   font-size: clamp(1.7rem, 2.6vw, 2.3rem);
 }
 
@@ -470,6 +470,8 @@ body.info-open .hero {
 
 body.modal-open {
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 @media (max-width: 960px) {
