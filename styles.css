@@ -89,7 +89,8 @@ body {
 .info-toggle,
 .theme-toggle,
 .reset-chip,
-.zoom-chip {
+.zoom-chip,
+.fullscreen-chip {
   border: 1px solid var(--chip-border);
   background: var(--chip-bg);
   color: var(--chip-text);
@@ -288,8 +289,9 @@ body.info-open .hero {
 
 .fullscreen-chip {
   pointer-events: auto;
-  width: 2.35rem;
+  width: 2.7rem;
   height: 2.35rem;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -511,8 +513,11 @@ body.info-open .hero {
 
 body.modal-open {
   overflow: hidden;
-  touch-action: none;
   overscroll-behavior: none;
+}
+
+.artwork-modal__panel {
+  touch-action: pan-y;
 }
 
 @media (max-width: 960px) {

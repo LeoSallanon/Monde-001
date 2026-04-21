@@ -807,7 +807,7 @@
         modal.addEventListener(
           'touchmove',
           (event) => {
-            if (!modal.hidden) {
+            if (!modal.hidden && event.touches.length > 1) {
               event.preventDefault();
             }
           },
